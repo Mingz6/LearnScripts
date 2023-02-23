@@ -1,2 +1,3 @@
 # LearnWinScript
-Windows script for daily life
+
+Run Windows scripts for simplify daily life
