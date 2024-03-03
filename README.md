@@ -1,3 +1,3 @@
-# LearnWinScript
+# LearnScripts
 
-Run Windows scripts for simplify daily life
+Run scripts for simplify daily life

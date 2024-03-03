@@ -1,0 +1,6 @@
+﻿# macOS Desktop Service Store
+.DS_Store
+
+# local development
+node_modules/
+.vscode/
