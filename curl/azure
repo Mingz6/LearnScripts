@@ -1,0 +1,3 @@
+curl -X POST https://<YourWebsite>.azurewebsites.net/api/HelloWorld? \
+-H "Content-Type: application/json" \
+-d '{"UploadedDocuments": "MyDocs5"}'

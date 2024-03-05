@@ -1,0 +1,3 @@
+curl -X POST http://localhost:7071/api/HelloWorld? \
+-H "Content-Type: application/json" \
+-d '{"UploadedDocuments": "MyDocs3"}'
