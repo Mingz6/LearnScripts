@@ -1,0 +1,1 @@
+docker run -it --rm -e NGROK_AUTHTOKEN=<YourAuthToken> --name NG ngrok/ngrok http --region=us --hostname=<name>-app.ngrok.io https://host.docker.internal:4280
