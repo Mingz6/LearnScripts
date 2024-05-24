@@ -1,0 +1,10 @@
+// Get docker ID
+// e.g. 40dd29d4c04a
+docker ps
+
+// Copy BAK file to the docker container
+docker cp Database.BAK 40dd29d4c04a:/Database.BAK
+
+// Restore the BAK file to the Data Studio
+// Delete BAK file from the docker container
+docker exec -u root 40dd29d4c04a rm /Database.BAK
