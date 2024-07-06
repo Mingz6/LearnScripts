@@ -18,7 +18,7 @@ scp -r <username>@<server_ip>:/path/to/<tiny-imagenet.zip> .
 
 # Step 5: Update and Upgrade Packages
 # Update package lists and upgrade installed packages.
-sudo apt update && apt upgrade
+sudo apt update && sudo apt upgrade
 
 # Step 6: Install NVIDIA CUDA Toolkit
 # Download and install the CUDA Toolkit for WSL.
