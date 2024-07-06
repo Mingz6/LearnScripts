@@ -16,4 +16,4 @@ conda init zsh
 conda activate testEnv3.9
 
 # Deactivate the Conda environment
-conda deactivate  
+conda deactivate
