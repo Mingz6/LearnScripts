@@ -1,105 +1,93 @@
-# Run the following cli in terminal to install WSL
+# This script outlines the steps to set up a Windows Subsystem for Linux (WSL) environment, install necessary packages, and configure CUDA for GPU computing with PyTorch.
+
+# Step 1: Install WSL
+# Run the following command in the terminal to install WSL.
 wsl --install
 
-# Display Ubuntu directory if successfully installed
+# Step 2: Verify Installation
+# Display the Ubuntu directory to verify successful installation.
 ls ../..
 
-#  Generated training folder
+# Step 3: Prepare Data Directory
+# Create a directory for training data.
 mkdir trainingData
 
-#  download the dataset from the server to local .
-scp -r <jerry>@<255.255.99.99>:/data/ming/tiny-imagenet.zip .
+# Step 4: Transfer Data
+# Download the dataset from a remote server to the local machine. Replace placeholders with actual values.
+scp -r <username>@<server_ip>:/path/to/<tiny-imagenet.zip> .
 
-#  For Unraid system list the full path
-root@NAS:~# pwd
-/root
-
-# Now Back to WSL
-# Update apt packges and upgrade (package management)
-
+# Step 5: Update and Upgrade Packages
+# Update package lists and upgrade installed packages.
 sudo apt update && apt upgrade
 
-# Install the NVIDIA CUDA Toolkit
+# Step 6: Install NVIDIA CUDA Toolkit
+# Download and install the CUDA Toolkit for WSL.
 wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
 sudo dpkg -i cuda-keyring_1.1-1_all.deb
 sudo apt-get update
 sudo apt-get -y install cuda-toolkit-12-5
 
-# Check GCC version
+# Step 7: Verify CUDA Installation
+# Check the installed GCC version and GPU availability.
 gcc --version
-# Check GPU
 nvidia-smi
 
-# download conda
-https://www.anaconda.com/download/
-
-# install conda
+# Step 8: Install Anaconda
+# Download and install Anaconda for managing Python versions and packages.
+# Replace the URL with the latest Anaconda installer link.
+wget https://www.anaconda.com/download/
 bash Anaconda3-2024.02-1-Linux-x86_64.sh
 
-# Check Current Path
-echo $PATH
+# Step 9: Configure Environment
+# Add Anaconda to the PATH environment variable.
+echo 'export PATH="/home/<username>/anaconda3/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
 
-# Add conda to path
-vim ~/.bashrc
-export PATH="/home/ming/anaconda3/bin:$PATH"
-# Save and exit
-# esc :wq
-
-
-# Install cudnn
-https://developer.nvidia.com/cudnn-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
-
+# Step 10: Install cuDNN
+# Download and install cuDNN. Replace the URL with the latest cuDNN installer link for your CUDA version.
 wget https://developer.download.nvidia.com/compute/cudnn/9.2.0/local_installers/cudnn-local-repo-ubuntu2204-9.2.0_1.0-1_amd64.deb
 sudo dpkg -i cudnn-local-repo-ubuntu2204-9.2.0_1.0-1_amd64.deb
-sudo cp /var/cudnn-local-repo-ubuntu2204-9.2.0/cudnn-*-keyring.gpg /usr/share/keyrings/
+# sudo cp /var/cudnn-local-repo-ubuntu2204-9.2.0/cudnn-*-keyring.gpg /usr/share/keyrings/
 sudo apt-get update
 sudo apt-get -y install cudnn
 
-# if failed. this may caused by a bug. you can fix by the following cli
-sudo ln -s libcuda.so.1.1 libcuda.so.1
-
-# reinstall cudnn
+# If installation fails due to a missing library, create a symbolic link as shown below and reinstall cuDNN.
+sudo ln -s /usr/local/cuda/lib64/libcuda.so.1.1 /usr/local/cuda/lib64/libcuda.so.1
 sudo apt-get --purge remove cudnn
 sudo apt-get -y install cudnn
-sudo apt-get -y install cudnn-cuda-12
+# sudo apt-get -y install cudnn-cuda-12
 
-# Modify the LD_LIBRARY_PATH
-vim ~/.bashrc
-# add the following line
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-# esc :wq
+# Step 11: Configure Library Paths
+# Add CUDA library paths to LD_LIBRARY_PATH.
+echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
 source ~/.bashrc
-echo $LD_LIBRARY_PATH
 
-# install nvidia toolkit
+# Step 12: Install NVIDIA CUDA Toolkit (Alternative Method)
+# Install the NVIDIA CUDA Toolkit using apt.
 sudo apt install nvidia-cuda-toolkit
 
-# create a new conda environment
+# Step 13: Create and Activate a Conda Environment
+# Create a new Conda environment with Python 3.9.
 conda create --name testEnv3.9 python=3.9
-# for study https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
-
-# activate the environment
 conda activate testEnv3.9
 
-conda env list
-
-source ~/.bashrc
-
-# install packages
+# Step 14: Install Python Packages
+# Install necessary Python packages using pip.
 pip install numpy
-# install pytorch
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-
-# watching GPU
+# Step 15: Monitor GPU Usage
+# Use the watch command to monitor GPU usage.
 watch nvidia-smi
-export CUDA_VSIBLE_DEVICES=1
+# Force PyTorch to use GPU #2.
+# export CUDA_VSIBLE_DEVICES=1
 
-# Use this carefully. It force all process to use 2nd GPU
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+# Step 16: PyTorch GPU Test
+# Test PyTorch GPU operations by allocating tensors to different GPUs.
 
-# Coding part
-import pytorch
+# # Use this carefully. It force all process to use 2nd GPU
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+import torch
 
 d1 = 'cuda:0'
 d2 = 'cuda:1'
