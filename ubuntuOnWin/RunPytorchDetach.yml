@@ -1,33 +1,33 @@
-# run process without attach current terminal
+# Running Python Scripts Detached from Terminal
 
-# method1 - to start:
+# Method 1: Using nohup
+# Start a detached process:
 nohup python xxx.py &
 
-# see outputs:
+# View output in real-time:
 tail -f nohup.out
 
-# to terminate:
-# ->find pid:
-    ps -ef | grep [xxx]            usually xxx is python
-# -> to kill the process:
-    kill -9 [pid]
+# Terminate the process:
+# 1. Find the process ID (PID) with:
+ps -ef | grep [xxx]  # Replace 'xxx' with the script name or unique identifier
+# 2. Terminate the process using its PID:
+kill -9 [pid]  # Replace '[pid]' with the actual PID found
 
+# Method 2: Using screen
+# Start a new screen session:
+screen -S [screen_name]  # Replace '[screen_name]' with a name for the session
 
-# method2 - use screen:
-# to start a screen:
-screen -S [screen_name]
+# Detach from the screen session without ending it:
+# Press 'Ctrl+A' then 'D'
 
-# to exit a screen without killing it:
-ctrl+a+d
+# Reattach to an existing screen session:
+screen -r [screen_name]  # Replace '[screen_name]' with the session's name
 
-# to re-enter a screen:
-screen -r [screen_name]
-
-# to list all screens:
+# List all screen sessions:
 screen -ls
 
-# to kill a screen:
-screen -X -S [screen_name] quit
+# Terminate a specific screen session:
+screen -X -S [screen_name] quit  # Replace '[screen_name]' with the session's name
 
-# to kill current screen:
-ctrl+d
+# Terminate the current screen session:
+# Press 'Ctrl+D'
