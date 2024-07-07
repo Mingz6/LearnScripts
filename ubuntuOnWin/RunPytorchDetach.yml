@@ -1,0 +1,33 @@
+# run process without attach current terminal
+
+# method1 - to start:
+nohup python xxx.py &
+
+# see outputs:
+tail -f nohup.out
+
+# to terminate:
+# ->find pid:
+    ps -ef | grep [xxx]            usually xxx is python
+# -> to kill the process:
+    kill -9 [pid]
+
+
+# method2 - use screen:
+# to start a screen:
+screen -S [screen_name]
+
+# to exit a screen without killing it:
+ctrl+a+d
+
+# to re-enter a screen:
+screen -r [screen_name]
+
+# to list all screens:
+screen -ls
+
+# to kill a screen:
+screen -X -S [screen_name] quit
+
+# to kill current screen:
+ctrl+d
