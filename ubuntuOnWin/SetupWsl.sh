@@ -113,3 +113,31 @@ y = y.to(d2)
 #         [0.8919, 0.2197, 0.5592,  ..., 0.3608, 0.6655, 0.9308],
 #         [0.8816, 0.3879, 0.8819,  ..., 0.8330, 0.3144, 0.7964]],
 #        device='cuda:1')
+
+
+# enter `code` in ubuntu terminal to open vs code with wsl environment
+
+# Follow the instructions to install and config the ssh on wsl.
+
+# https://medium.com/@wuzhenquan/windows-and-wsl-2-setup-for-ssh-remote-access-013955b2f421
+
+netsh interface portproxy add v4tov4 listenaddress=192.168.1.246 listenport=8889 connectaddress=172.26.157.41 connectport=22
+
+# RUn the following command in Windows Terminal to allow the port 8889 to be accessed from the internet.
+netsh advfirewall firewall add rule `
+name="wslEnableRemote" `
+dir=in `
+action=allow `
+protocol=TCP `
+localport=8889
+
+# Open the port 8889 on the Windows firewall.
+New-NetFirewallRule -DisplayName "Allow SSH on port 8889" -Direction Inbound -Protocol TCP -LocalPort 8889 -Action Allow -Profile Any
+
+# <!-- Setup static IP for the windows on your router. -->
+
+# Access the WSL from a remote machine using the following command.
+ssh ming@192.168.1.246 -p 8889
+
+# Access the WSL from a public machine using the following command.
+ssh ming@<public_wan_ip> -p <external_ssh_port>
