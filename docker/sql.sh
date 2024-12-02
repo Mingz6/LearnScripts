@@ -38,8 +38,8 @@ docker ps
 
 # Copy the backup file into the Docker container.
 # Replace 'YourDb.BAK' with the name of your backup file and '7edd10a3808d' with your container's ID.
-docker cp YourDb.BAK 7edd10a3808d:/YourDb.BAK
+docker cp <YourDb>.BAK <7edd10a3808d>:/<YourDb>.BAK
 
 # Step 4: Clean Up
 # After restoring the database, remove the backup file from the container to save space.
-docker exec -u root 7edd10a3808d rm /YourDb.BAK
+docker exec -u root <7edd10a3808d> rm /<YourDb>.BAK
