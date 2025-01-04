@@ -1,0 +1,82 @@
+name: Base - NetCore build and publish
+
+on:
+  workflow_call:
+    inputs:
+      project_name:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      project_path:
+        required: true
+        type: string
+      web_app_name:
+        required: true
+        type: string
+      dotnet_version:
+        required: true
+        type: string
+    secrets:
+      azure_client_id:
+        required: true
+      azure_tenant_id:
+        required: true
+      azure_subscription_id:
+        required: true
+      publish_profile:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    env:
+      project: ${{ inputs.project_name }}
+      buildConfiguration: 'Release'
+      publishOutput: 'publish_output'
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+
+      - name: Restore dependencies
+        run: |
+          cd ${{ inputs.project_path }}
+          dotnet restore ${{ env.project }}
+
+      - name: Build
+        run: |
+          cd ${{ inputs.project_path }}
+          dotnet build ${{ env.project }} --configuration ${{ env.buildConfiguration }}
+
+      - name: Publish
+        run: |
+          cd ${{ inputs.project_path }}
+          dotnet publish ${{ env.project }} --configuration ${{ env.buildConfiguration }} --output ${{ github.workspace }}/${{ env.publishOutput }}
+
+      - name: 'AZ Login'
+        uses: azure/login@v1.6.0
+        with:
+          client-id: ${{ secrets.azure_client_id }}
+          tenant-id: ${{ secrets.azure_tenant_id }}
+          subscription-id: ${{ secrets.azure_subscription_id }}
+          enable-AzPSSession: true
+
+      - name: Deploy to Azure Web App Staging Slot
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ inputs.web_app_name }}
+          publish-profile: ${{ secrets.publish_profile }}
+          package: ${{ github.workspace }}/${{ env.publishOutput }}
+          slot-name: 'staging'
+
+      - name: Swap Slots - ${{ inputs.web_app_name }}
+        run: |
+          az webapp deployment slot swap --name ${{ inputs.web_app_name }} --resource-group my-resource-group-${{ inputs.environment }} --slot staging --target-slot production

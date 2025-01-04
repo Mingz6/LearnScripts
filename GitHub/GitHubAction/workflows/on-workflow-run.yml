@@ -1,0 +1,18 @@
+name: On workflow run
+
+on:
+    workflow_run: # There is a bug here and this won't be triggered
+        workflows: [ Validate PR Title ]
+        types: [ completed ]
+
+jobs:
+    on-success:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        steps:
+            - run: echo 'The triggering workflow passed'
+    on-failure:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+        steps:
+            - run: echo 'The triggering workflow failed'

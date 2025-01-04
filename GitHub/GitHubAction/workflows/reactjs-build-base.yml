@@ -1,0 +1,79 @@
+name: Base - ReactJs build and upload
+
+on:
+  workflow_call:
+    inputs:
+      project_path:
+        required: true
+        type: string
+      build_path:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      storage_account:
+        required: true
+        type: string
+      ci_command:
+        required: true
+        type: string
+      build_command:
+        required: true
+        type: string
+    secrets:
+      azure_client_id:
+        required: true
+      azure_tenant_id:
+        required: true
+      azure_subscription_id:
+        required: true
+      st_account_key:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: '${{ inputs.environment }}'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.1
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4.0.1
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies
+        run: |
+          cd '${{ inputs.project_path }}'
+          ${{ inputs.ci_command }}
+
+      - name: Build ReactJs
+        run: |
+          cd '${{ inputs.project_path }}'
+          ${{ inputs.build_command }}
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1.6.0
+        with:
+          client-id: ${{ secrets.azure_client_id }}
+          tenant-id: ${{ secrets.azure_tenant_id }}
+          subscription-id: ${{ secrets.azure_subscription_id }}
+          enable-AzPSSession: true
+
+      - name: Delete Azure Blob Storage files
+        run: |
+          az storage blob delete-batch \
+          --account-name ${{ inputs.storage_account }} \
+          -s \$web \
+          --account-key '${{ secrets.st_account_key }}'
+
+      - name: Upload build files to Azure Blob Storage
+        run: |
+          az storage blob upload-batch \
+          --account-name ${{ inputs.storage_account }} \
+          --destination \$web \
+          --account-key ${{ secrets.st_account_key }} \
+          --source '${{ inputs.build_path }}'

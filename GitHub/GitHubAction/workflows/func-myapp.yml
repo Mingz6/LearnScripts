@@ -1,0 +1,43 @@
+name: Func myapp
+
+on:
+  push:
+    branches: [ dev, test, main ]
+    paths:
+      - "code/myapp/**/*"
+
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+  setup-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.configure-env.outputs.env_name }}
+
+    steps:
+    - name: Check branch name and target environment
+      id: configure-env
+      run: |
+        if [ ${{ github.ref_name }} == "main" ]; then
+          echo "env_name=prod" >> $GITHUB_OUTPUT
+          echo "Environment target to Production" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "env_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "Environment target to ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  setup-azure-function-app:
+      needs: setup-environment
+      uses: ./.github/workflows/func-base.yml
+      with:
+        app_name: "func-<myapp>-${{ needs.setup-environment.outputs.env_name }}"
+        environment: ${{ needs.setup-environment.outputs.env_name }}
+        dotnet_version: "6.0.x"
+        package_path: "code/<myapp>"
+      secrets:
+        publish_profile: ${{ secrets.FUNC_<MYAPP>_PUB_PROFILE }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

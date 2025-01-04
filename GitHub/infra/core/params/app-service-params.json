@@ -1,0 +1,54 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"webAppProfiles": {
+			"value": {
+				"dev": {
+					"firstWebApp": {
+						"webAppName": "app-my-webapp-dev",
+						"apiUrl": "my-webapp-api-dev.mingz.ab.ca"
+					},
+					"secondWebApp": {
+						"webAppName": "app-my-webapp-second-dev",
+						"apiUrl": "second.my-webapp-api-dev.mingz.ab.ca"
+					}
+				},
+				"test": {
+					"firstWebApp": {
+						"webAppName": "app-my-webapp-test",
+						"apiUrl": "my-webapp-api-test.mingz.ab.ca"
+					},
+					"secondWebApp": {
+						"webAppName": "app-my-webapp-second-test",
+						"apiUrl": "second.my-webapp-api-test.mingz.ab.ca"
+					}
+				},
+				"prod": {
+					"firstWebApp": {
+						"webAppName": "app-my-webapp-prod",
+						"apiUrl": "my-webapp-api.mingz.ab.ca"
+					},
+					"secondWebApp": {
+						"webAppName": "app-my-webapp-second-prod",
+						"apiUrl": "second.my-webapp-api.mingz.ab.ca"
+					}
+				}
+			}
+		},
+		"myFirstParams": {
+			"value": {
+				"dev": "https://sub.mingz.ab.ca/account/login",
+				"test": "https://sub.mingz.ab.ca/account/login",
+				"prod": "https://sub.mingz.ab.ca/account/login"
+			}
+		},
+		"mySecondParams": {
+			"value": {
+				"dev": "https://ming-dev.com/users/sessions",
+				"test": "https://ming-test.com/users/sessions",
+				"prod": "https://ming.com/users/sessions"
+			}
+		}
+	}
+}

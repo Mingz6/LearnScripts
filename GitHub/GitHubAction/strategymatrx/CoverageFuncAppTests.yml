@@ -1,0 +1,91 @@
+name: Coverage func App tests
+
+on:
+  pull_request:
+    branches:
+      - feature/your-fancy-branch-name
+      - main
+      - test
+    types:
+      [ opened, reopened, edited, synchronize, reopened ]
+
+jobs:
+  coverage-dotnet:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          sparse-checkout: |
+            dotnet/
+      - uses: dorny/paths-filter@v3.0.2
+        id: filter
+        with:
+          filters: |
+            TodoApp:
+              - 'dotnet/Core/MyFirstApp.Core.TodoApp*/**'
+            Validation:
+              - 'dotnet/Core/MySecondApp.Core.Validation*/**'
+            Sharepoint:
+              - 'dotnet/Core/MyThirdApp.FuncApps.SharePoint*/**'
+
+      - name: Set Environment for Apps Changes
+        run: |
+          echo "change_count=$(echo '${{ steps.filter.outputs.changes }}' | jq length)" >> $GITHUB_ENV
+
+      - name: Set Dynamic Cli
+        if: env.change_count > 0
+        id: setCli
+        env:
+          OUTPUTS: ${{ toJson(steps.filter.outputs) }}
+        run: |
+          changedApps=$(echo '${{ steps.filter.outputs.changes }}' | jq -r '.[]')
+          commands=""
+          for app in $changedApps; do
+            # Construct the test directory path
+            testDirectory="dotnet/$app/MyApp.FuncApps.$app.Test"
+            if [ -d "$testDirectory" ]; then
+              commands+="dotnet test $testDirectory --settings:$testDirectory/test.runsettings --configuration Release --no-build --no-restore --collect:\"XPlat Code Coverage\" --results-directory $testDirectory/coverage; "
+            fi
+          done
+          echo "commands=$commands" >> $GITHUB_ENV
+
+      - name: Setup .NET Core SDK
+        if: env.change_count > 0
+        uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 8.x
+      - name: Build
+        if: env.change_count > 0
+        working-directory: dotnet
+        run: dotnet build --configuration Release
+
+      - name: Test Changed Azure Function App
+        if: env.change_count > 0
+        run: |
+          ${{ env.commands }}
+
+      - name: Generate Code Coverage Report
+        if: env.change_count > 0
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "**/coverage.cobertura.xml"
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "80 90"
+
+      - name: Add Coverage PR Comment
+        if: ${{ env.change_count > 0 && (success() || failure()) }}
+        uses: marocchino/sticky-pull-request-comment@v2.9.0
+        with:
+          header: Dotnet Coverage
+          message: Dotnet coverage for pull request
+          recreate: true
+          path: code-coverage-results.md

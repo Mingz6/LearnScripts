@@ -1,0 +1,70 @@
+name: Reactjs coverage report
+
+on:
+  pull_request:
+    types: [ opened, reopened, edited, synchronize, converted_to_draft ]
+    branches: [ dev, test, main ]
+    paths:
+      - 'code/myApp.ReactJs/**'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    permissions: read-all
+    outputs:
+      MyApp: ${{ steps.filter.outputs.MyApp }}
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: dorny/paths-filter@v2.11.1
+        id: filter
+        with:
+          filters: |
+            MyApp:
+              - './code/MyApp.ReactJs/**'
+      - run: echo 'MyApp changes == ${{ steps.filter.outputs.MyApp }}'
+
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.1
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Connect dependencies
+        if: needs.detect_changes.outputs.MyApp == 'true'
+        working-directory: ./code/MyApp.ReactJs
+        run: npm ci
+
+      - name: Run tests
+        if: needs.detect_changes.outputs.MyApp == 'true'
+        working-directory: ./code/MyApp.ReactJs
+        run: npm run test:cover
+
+      - name: Generate ReactJS Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "**/cobertura-coverage.xml"
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "80 90"
+
+      - name: Add ReactJS Code Coverage PR Comment
+        # post results even if previous action 'fails' due to low code coverage
+        if: ${{ success() || failure() }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: ReactJS Coverage
+          message: ReactJS coverage for pull request
+          recreate: true
+          path: code-coverage-results.md

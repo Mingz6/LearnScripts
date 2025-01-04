@@ -1,0 +1,87 @@
+name: Coverage React tests
+
+on:
+  pull_request:
+    branches:
+      - feature/your-fancy-branch-name
+      - main
+      - test
+    types:
+      [ opened, reopened, edited, synchronize, reopened ]
+
+jobs:
+  coverage-react:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          sparse-checkout: |
+            react/
+      - uses: dorny/paths-filter@v3.0.2
+        id: filter
+        with:
+          filters: |
+            MyApp:
+              - 'react/apps/MyApp/**'
+            MySecondApp:
+              - 'react/apps/MySecondApp/**'
+            MyThirdApp:
+              - 'react/apps/MyThirdApp/**'
+            shared-components:
+              - 'react/libs/shared-components/**'
+      - name: Set Environment for Apps Changes
+        run: |
+          echo "change_count=$(echo '${{ steps.filter.outputs.changes }}' | jq length)" >> $GITHUB_ENV
+      - name: Set Dynamic Cli
+        if: env.change_count > 0
+        id: setCli
+        env:
+          OUTPUTS: ${{ toJson(steps.filter.outputs) }}
+        run: |
+          changedApps=$(echo '${{ steps.filter.outputs.changes }}' | jq -r '.[]')
+          commands=""
+          for app in $changedApps; do
+              commands+="npx nx run $app:lint; npx nx run $app:test --coverage; "
+          done
+          echo "commands=$commands" >> $GITHUB_ENV
+
+      - name: Set up node
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: 20
+      - name: Install dependencies
+        working-directory: ./react/
+        run: npm ci
+
+      - name: Test React App
+        if: env.change_count > 0
+        working-directory: ./react/
+        run: |
+          ${{ env.commands }}
+
+      - name: Generate Code Coverage Report
+        if: env.change_count > 0
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "**/cobertura-coverage.xml"
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "80 90"
+
+      - name: Add Code Coverage PR Comment
+        if: ${{ env.change_count > 0 && (success() || failure()) }}
+        uses: marocchino/sticky-pull-request-comment@v2.9.0
+        with:
+          header: ReactJS Coverage
+          message: ReactJS coverage for pull request
+          recreate: true
+          path: code-coverage-results.md
+

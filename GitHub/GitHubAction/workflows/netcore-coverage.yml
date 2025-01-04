@@ -1,0 +1,75 @@
+name: NetCore coverage report
+
+on:
+  pull_request:
+    types: [ opened, reopened, edited, synchronize, converted_to_draft ]
+    branches: [ dev, test, main ]
+    paths:
+      - 'code/<MyApplication>/**'
+
+jobs:
+  detect_changes:
+    runs-on: ubuntu-latest
+    permissions: read-all
+    outputs:
+      HasAnyCodeChanges: ${{ steps.filter.outputs.HasAnyCodeChanges }}
+      MyApplication: ${{ steps.filter.outputs.MyApplication }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Filter Changes
+        uses: dorny/paths-filter@v2.11.1
+        id: filter
+        with:
+          filters: |
+            HasAnyCodeChanges:
+              - 'code/**'
+            MyApplication:
+              - 'code/MyApplication/**'
+
+  test-projects-changes:
+    needs: detect_changes
+    if: needs.detect_changes.outputs.HasAnyCodeChanges == 'true'
+    runs-on: linux-runner-large
+    permissions: write-all
+
+    env:
+      buildConfiguration: 'Release'
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Build
+        working-directory: ./
+        run: dotnet build --nologo -v q --property WarningLevel=0 /clp:ErrorsOnly --configuration ${{ env.buildConfiguration }}
+
+      - name: Test My Application Code
+        if: needs.detect_changes.outputs.MyApplication == 'true'
+        working-directory: ./test/MyApplication.Tests/
+        run: dotnet test --collect:"Xplat Code Coverage" --settings:test.runsettings --no-build --no-restore --configuration ${{ env.buildConfiguration }}
+
+      - name: Generate Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "**/coverage.cobertura.xml"
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "80 90"
+
+      - name: Add Coverage PR Comment
+        if: ${{ success() || failure() }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          path: code-coverage-results.md

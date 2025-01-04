@@ -1,0 +1,52 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"cdnProfilesParams": {
+			"value": {
+				"dev": [
+					{
+						"cdnUrl": "mingz-dev.domain.ab.ca",
+						"cdnProfileName": "cdnp-mingz-dev",
+						"cdnEndpointName": "cdne-web-mingz-dev",
+						"cdnStorageAccountName": "stmingzdev"
+					},
+					{
+						"cdnUrl": "second.mingz-dev.domain.ab.ca",
+						"cdnProfileName": "cdnp-mingz-second-dev",
+						"cdnEndpointName": "cdne-web-mingz-second-dev",
+						"cdnStorageAccountName": "stmingzseconddev"
+					}
+				],
+				"test": [
+					{
+						"cdnUrl": "mingz-test.domain.ab.ca",
+						"cdnProfileName": "cdnp-mingz-test",
+						"cdnEndpointName": "cdne-web-mingz-test",
+						"cdnStorageAccountName": "stmingztest"
+					},
+					{
+						"cdnUrl": "second.mingz-test.domain.ab.ca",
+						"cdnProfileName": "cdnp-mingz-second-test",
+						"cdnEndpointName": "cdne-web-mingz-second-test",
+						"cdnStorageAccountName": "stmingzsecondtest"
+					}
+				],
+				"prod": [
+					{
+						"cdnUrl": "mingz.domain.ab.ca",
+						"cdnProfileName": "cdnp-mingz-prod",
+						"cdnEndpointName": "cdne-web-mingz-prod",
+						"cdnStorageAccountName": "stmingzprod"
+					},
+					{
+						"cdnUrl": "second.mingz.domain.ab.ca",
+						"cdnProfileName": "cdnp-mingz-second-prod",
+						"cdnEndpointName": "cdne-web-second-prod",
+						"cdnStorageAccountName": "stmingzsecondprod"
+					}
+				]
+			}
+		}
+	}
+}

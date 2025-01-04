@@ -1,0 +1,45 @@
+name: ReactJs project build and upload
+
+on:
+  push:
+    branches: [ dev, test, main ]
+    paths:
+      - "code/MyProject.ReactJs/**/*"
+
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+  setup-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.configure-env.outputs.env_name }}
+
+    steps:
+    - name: Check branch name and target environment
+      id: configure-env
+      run: |
+        if [ ${{ github.ref_name }} == "main" ]; then
+          echo "env_name=prod" >> $GITHUB_OUTPUT
+          echo "Environment target to Production" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "env_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "Environment target to ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  reactjs-myapp-build-and-upload:
+    needs: setup-environment
+    uses: ./.github/workflows/reactjs-build-base.yml
+    with:
+      project_path: code/MyProject.ReactJs/
+      build_path: code/MyProject.ReactJs/build/
+      environment: ${{ needs.setup-environment.outputs.env_name }}
+      storage_account: stmyapp${{ needs.setup-environment.outputs.env_name }}
+      ci_command: 'npm ci'
+      build_command: 'CI=false npm run build:${{ needs.setup-environment.outputs.env_name }}'
+    secrets:
+      azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+      azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      st_account_key: ${{ secrets.ST_CONNECT_ACCOUNT_KEY }}

@@ -1,0 +1,42 @@
+name: 'PR Title Check'
+description: 'This action file runs a bash script to check the PR title'
+
+outputs:
+  is_pr_valid:
+    description: "Whether PR title validation valid or not"
+    value: ${{ steps.validate_pr.outputs.is_pr_valid }}
+  error_message:
+    description: "Print error message if PR title validation fails"
+    value: ${{ steps.validate_pr.outputs.error_message }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Validate PR Title
+      id: validate_pr
+      shell: bash
+      run: |
+          echo "Checking PR title"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+          echo Target branch is ${{ github.base_ref }}.
+
+          trimmed_pr_title=$(echo "${{ github.event.pull_request.title }}" | tr -d ' ' | xargs)
+          is_pr_valid="true"
+          error_message=""
+
+          if [[ $trimmed_pr_title =~ test && ${{ github.event.pull_request.base.ref }} != "test" ]] || [[ $trimmed_pr_title =~ prod && ${{ github.event.pull_request.base.ref }} != "main" ]]; then
+            is_pr_valid="false"
+            error_message="Error: Your branch name '${{ github.event.pull_request.title }}' does not match the expected target branch '${{ github.base_ref }}'"
+            echo "$error_message" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          Regex="^(bugfix|feature)-AB#([0-9]+)-.*-(dev|test|prod)"
+
+          if [[ ! $trimmed_pr_title =~ $Regex ]]; then
+            is_pr_valid="false"
+            error_message="Error: Invalid PR title! Your PR Title must match the format: ${{ github.event.pull_request.title }} ==> bugfix/feature - AB#{ticket number} - name - description - dev/test/prod"
+            echo "$error_message" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "is_pr_valid=$is_pr_valid" >> $GITHUB_OUTPUT
+          echo "error_message=$error_message" >> $GITHUB_OUTPUT

@@ -1,0 +1,45 @@
+name: Deploy Azure Resource
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        type: string
+        required: true
+    secrets:
+      azure-client-id:
+        required: true
+      azure-tenant-id:
+        required: true
+      azure-subscription-id:
+        required: true
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    name: Deploy to <YourEnv>
+    environment: <YourEnv>
+
+    steps:
+      - name: 'Checkout REPO'
+        uses: actions/checkout@v4.1.1
+
+      - name: 'Azure Login'
+        uses: Azure/login@v1.6.0
+        with:
+          client-id: ${{ secrets.azure-client-id }}
+          tenant-id: ${{ secrets.azure-tenant-id }}
+          subscription-id: ${{ secrets.azure-subscription-id }}
+          enable-AzPSSession: true
+
+      - name: 'Deploy Azure Resource Manager (ARM)'
+        uses: Azure/arm-deploy@v1.0.9
+        with:
+          scope: 'resourcegroup'
+          subscriptionId: ${{ secrets.azure-subscription-id }}
+          resourceGroupName: 'my-resource-group-${{ inputs.environment  }}'
+          template: ./<your>.bicep
+          parameters: >
+            environmentName=${{ <YourEnv> }}
+          failOnStdErr: false

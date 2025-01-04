@@ -1,0 +1,73 @@
+name: GitHub Actions Demo1
+run-name: ${{ github.actor }} is testing1 out GitHub Actions 🚀
+on: [workflow_dispatch]
+
+env:
+  # Setting an environment variable with the value of a configuration variable
+  env_var: test # ${{ vars.ENV_CONTEXT_VAR }}
+  environment: test
+  my_haha: ${{ vars.JOB_NAME }}
+
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+  get_branch_name:
+      # uses: ./.github/workflows/github-branch-check.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: My first step - check out repository
+        uses: actions/checkout@v4
+      - name: My second step - get branch name
+        uses: ./.github/actions/github-branch-check
+    
+  Print_branch_name:
+    runs-on: ubuntu-latest
+    needs: get_branch_name
+    steps:
+    - run: |
+        echo the 1st is ${{ needs.get_branch_name.outputs.firstword }} 
+        echo the 2nd is ${{ needs.get_branch_name.outputs.secondword }}
+
+# jobs:
+
+#   display-branch-name:
+#     needs: get_branch_name
+#     runs-on: ubuntu-latest
+#     steps:
+#     - run: |
+#         echo "The 1st is ${{ needs.get_branch_name.outputs.firstword }}"
+#         echo "The 2nd is ${{ needs.get_branch_name.outputs.secondword }}"
+
+  display-variables:
+    name: |
+      ${{ vars.JOB_NAME }}
+    # You can use configuration variables with the `vars` context for dynamic jobs
+    if: ${{ vars.USE_VARIABLES == 'true' }}
+    runs-on: ${{ vars.RUNNER }}
+    # environment: ${{ vars.ENVIRONMENT_STAGE }}
+    # environment: test
+    steps:
+    - name: Use variables => ${{ vars.ENVIRONMENT_STAGE }}
+      run: |
+        echo "context var variable : $ENV_CONTEXT_VAR"
+        echo "job name variable : $JOB_NAME"
+        echo "USE_VARIABLES variable : $USE_VARIABLES"
+        echo "RUNNER variable : $RUNNER"
+        echo "ENVIRONMENT_STAGE variable : $ENVIRONMENT_STAGE"
+        echo "REPOSITORY_VAR variable : $REPOSITORY_VAR"
+        echo "ORGANIZATION_VAR variable : $ORGANIZATION_VAR"
+        echo "overridden variable : $OVERRIDE_VAR"
+        echo "variable from shell environment : $env_var"
+        echo "myhaha variable: $my_haha"
+        echo "myhaha variable: $my_haha"
+      env:
+        ENV_CONTEXT_VAR: ${{ vars.ENV_CONTEXT_VAR }}
+        JOB_NAME: ${{ vars.JOB_NAME }}
+        USE_VARIABLES: ${{ vars.USE_VARIABLES }}
+        RUNNER: ${{ vars.RUNNER }}
+        ENVIRONMENT_STAGE: ${{ vars.ENVIRONMENT_STAGE }}
+        REPOSITORY_VAR: ${{ vars.REPOSITORY_VAR }}
+        ORGANIZATION_VAR: ${{ vars.ORGANIZATION_VAR }}
+        OVERRIDE_VAR: ${{ vars.OVERRIDE_VAR }}

@@ -1,0 +1,44 @@
+name: NetCore connect build and publish
+
+on:
+  push:
+    branches: [ dev, test, main ]
+    paths:
+      - "<MyApp>/**/*"
+
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+  setup-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.configure-env.outputs.env_name }}
+
+    steps:
+    - name: Check branch name and target environment
+      id: configure-env
+      run: |
+        if [ ${{ github.ref_name }} == "main" ]; then
+          echo "env_name=prod" >> $GITHUB_OUTPUT
+          echo "Environment target to Production" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "env_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "Environment target to ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  netcore-build-and-publish:
+    needs: setup-environment
+    uses: ./.github/workflows/netcore-build-base.yml
+    with:
+      project_name: <MyApp>.csproj
+      environment: ${{ needs.setup-environment.outputs.env_name }}
+      project_path: code/<MyApp>/
+      web_app_name: <MyApp>${{ needs.setup-environment.outputs.env_name }}
+      dotnet_version: 6.0.x
+    secrets:
+      azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+      azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      publish_profile: ${{ secrets.<MyApp_PUB_PROFILE> }}

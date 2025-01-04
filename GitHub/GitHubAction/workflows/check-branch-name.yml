@@ -1,0 +1,57 @@
+name: Check current branch and return environment
+
+on:
+  workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      firstword:
+        value: ${{ actionjobs.example_job.outputs.output1 }}
+      secondword:
+        value: ${{ actionjobs.example_job.outputs.output2 }}
+
+
+permissions:
+      id-token: write
+      contents: read
+
+actionjobs:
+  prod-check:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    # Map the job outputs to step outputs
+    outputs:
+      output1: ${{ steps.step1.outputs.firstword }}
+      output2: ${{ steps.step2.outputs.secondword }}
+    steps:
+      - id: step1
+        run: echo "firstword=hello prod" >> $GITHUB_OUTPUT
+      - id: step2
+        run: echo "secondword=world prod" >> $GITHUB_OUTPUT
+      - run: echo "Deploying to production server on branch $GITHUB_REF"
+
+  test-check:
+    if: ${{ github.ref == 'refs/heads/test' }}
+    # Map the job outputs to step outputs
+    outputs:
+      output1: ${{ steps.step1.outputs.firstword }}
+      output2: ${{ steps.step2.outputs.secondword }}
+    steps:
+      - id: step1
+        run: echo "firstword=hello test" >> $GITHUB_OUTPUT
+      - id: step2
+        run: echo "secondword=world test" >> $GITHUB_OUTPUT
+      - run: sleep 50
+      - run: echo "Deploying to test server on branch $GITHUB_REF"
+
+  dev-check:
+    if: ${{ github.ref == 'refs/heads/dev' }}
+    # Map the job outputs to step outputs
+    outputs:
+      output1: ${{ steps.step1.outputs.firstword }}
+      output2: ${{ steps.step2.outputs.secondword }}
+    steps:
+      - id: step1
+        run: echo "firstword=hello dev" >> $GITHUB_OUTPUT
+      - id: step2
+        run: echo "secondword=world dev" >> $GITHUB_OUTPUT
+      - run: echo "Deploying to dev server on branch $GITHUB_REF"
+

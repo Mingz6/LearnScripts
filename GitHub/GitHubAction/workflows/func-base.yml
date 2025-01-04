@@ -1,0 +1,65 @@
+name: Base - Deploy Func App
+
+on:
+  workflow_call:
+    inputs:
+      app_name: 
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      package_path:
+        required: true
+        type: string
+      dotnet_version:
+        required: true
+        type: string
+    secrets:
+      publish_profile: 
+        required: true
+      client-id: 
+        required: true
+      tenant-id: 
+        required: true
+      subscription-id: 
+        required: true
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v4.1.1
+      with:
+        sparse-checkout: |
+          './${{inputs.package_path}}'
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1.6.0
+      with:
+        client-id: ${{ secrets.client-id }}
+        tenant-id: ${{ secrets.tenant-id }}
+        subscription-id: ${{ secrets.subscription-id }}
+        enable-AzPSSession: true
+
+    - name: 'Setup DotNet ${{ inputs.dotnet_version }} Environment'
+      uses: actions/setup-dotnet@v4.0.0
+      with:
+        dotnet-version: ${{ inputs.dotnet_version }}
+
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: pwsh
+      run: |
+        pushd './${{inputs.package_path}}'
+        dotnet build --configuration Release --output ./output
+        popd
+
+    - name: Run Azure Functions Action
+      uses: Azure/functions-action@v1.5.1
+      with:
+        app-name: ${{ inputs.app_name }}
+        package: '${{inputs.package_path }}/output'
+        publish-profile: ${{ secrets.publish_profile }}

@@ -1,0 +1,73 @@
+name: GitHub Actions Demo1
+run-name: ${{ github.actor }} is testing1 out GitHub Actions 🚀
+
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+  check-changed-files:
+    needs: [ display-environment, validate-pr-title ]
+    runs-on: ubuntu-latest
+    outputs:
+      list-of-files: ${{ steps.set-files.outputs.listoffiles }}
+
+    steps:
+    - name: Checkout REPO
+      uses: actions/checkout@v4.1.1
+      with:
+        ref: ${{ github.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: Process files changed in the commits
+      id: set-files
+      run: |
+        changedFiles=$(git diff --name-only HEAD^)
+        matrixArray=()
+        for file in $changedFiles; do
+          echo "Processing file: $file"
+        done
+
+        for file in $changedFiles; do
+          echo "Processing file: $file"
+          matrixArray+=(\"$file\")
+        done
+
+        matrixJson=$(printf ',%s' "${matrixArray[@]}")
+        matrixJson="[${matrixJson:1}]"
+
+        # Set the output
+        echo "listoffiles=$matrixJson" >> $GITHUB_OUTPUT
+
+  deploy-azure-resources:
+    needs: check-changed-files
+    name: Deploy Azure Resources
+    runs-on: ubuntu-latest
+    steps:
+    - name: test output
+      run: |
+
+        fileList="${{ needs.check-changed-files.outputs.list-of-files }}"        
+        if echo "$fileList" | grep -q ".bicep"; then
+          echo "Contains .bicep files"
+        else
+          echo "Does not contain .bicep files"
+        fi
+    
+    if: ${{ contains(fromJSON(needs.steps.check-changed-files.output.matrix), '.bicep') }}
+
+    uses: ./.github/workflows/deploy-azure-resource.yml
+    with:
+      environment: ${{ needs.Setup.outputs.ENV_NAME }}
+    secrets:
+      azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+  RunTests:
+    needs: display-environment
+    runs-on: ubuntu-latest
+    environment: ${{needs.Setup.outputs.ENV_NAME}}
+
+    steps:
+      - uses: actions/checkout@v4.1.1

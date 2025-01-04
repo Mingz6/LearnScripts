@@ -1,0 +1,134 @@
+name: Conditional Matrix Tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - feature/your-fancy-branch-name
+      - main
+      - test
+    types:
+      [ opened, reopened, edited, synchronize, reopened ]
+    paths:
+      - 'dotnet/**'
+
+jobs:
+  detect_changes:
+    runs-on: ubuntu-latest
+    permissions: read-all
+    outputs:
+      dynamicMatrix: ${{ steps.setmatrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          sparse-checkout: |
+            dotnet/
+      - uses: dorny/paths-filter@v3.0.2
+        id: filter
+        with:
+          filters: |
+            TodoApp:
+              - 'dotnet/Core/MyFirstApp.Core.TodoApp*/**'
+            Validation:
+              - 'dotnet/Core/MySecondApp.Core.Validation*/**'
+            Sharepoint:
+              - 'dotnet/Core/MyThirdApp.FuncApps.SharePoint*/**'
+
+      - name: Set Dynamic Matrix
+        id: setmatrix
+        env:
+          OUTPUTS: ${{ toJson(steps.filter.outputs) }}
+        run: |
+          funcApps=('MyFirstApp', 'MySecondApp', 'MyThirdApp')
+          matrix="{\"include\":["
+
+          for app in "${funcApps[@]}"; do
+            appOutput=$(echo "$OUTPUTS" | jq -r --arg app "$app" '.[$app]')
+            if [[ "$appOutput" == "true" ]]; then
+              matrix+="{\"funcApp\":\"$app\"},"
+            fi
+          done
+
+          matrix="${matrix%,}]}"
+          echo "My matrix is: $matrix"
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  build_project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          sparse-checkout: |
+            dotnet/
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 6.x
+      - name: Build
+        working-directory: dotnet
+        run: dotnet build --configuration Release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: dotnet-build
+          path: dotnet/
+
+  test_azure_functions_logger:
+    needs: detect_changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJson(needs.detect_changes.outputs.dynamicMatrix)}}
+    steps:
+      - name: Test Function App
+        run: echo "Testing ${{ matrix.funcApp }}"
+
+  funcAppTest:
+    needs: [detect_changes, build_project]
+    runs-on: ubuntu-latest
+    permissions: write-all
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.detect_changes.outputs.dynamicMatrix)}}
+    steps:
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: dotnet-build
+          path: dotnet/
+
+      - name: Display structure of downloaded files
+        run: ls -R dotnet/
+
+      - name: Display folder
+        run: ls
+
+      - name: Build
+        working-directory: dotnet
+        run: dotnet build --configuration Release
+
+      - name: Test Specific Azure Function
+        working-directory: dotnet/${{ matrix.funcApp }}/MyApp.FuncApps.${{ matrix.funcApp }}.Test/
+        run: |
+          dotnet test --settings:test.runsettings --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Generate Code Coverage Report
+        if: always()
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "**/coverage.cobertura.xml"
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "80 90"
+
+      - name: Add Coverage PR Comment
+        if: ${{ success() || failure() }}
+        uses: marocchino/sticky-pull-request-comment@v2.9.0
+        with:
+          recreate: true
+          path: code-coverage-results.md

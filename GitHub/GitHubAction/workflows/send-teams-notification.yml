@@ -1,0 +1,30 @@
+name: Send Teams Notification
+
+on:
+  pull_request:
+    types: [ opened, reopened, ready_for_review ]
+    branches: [ dev ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  send_teams_notification:
+    name: Send Teams Message
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification
+        uses: neonidian/teams-notify-build-status@v3
+        with:
+          webhookUrl: |
+            ${{ secrets.MSTEAMS_WEBHOOK }}
+          title: ${{ github.actor }} submitted a PR and waiting for reviewers
+          titleBackgroundColor: green
+          status: success
+          message: >-
+            Looking for reviewers. Please review the PR and approve if it looks good.
+        env: # Enable actor labels and buttons using environment variables
+          SHOULD_DISPLAY_ACTOR_LABEL: true
+          SHOULD_DISPLAY_VIEW_RUN_BUTTON: true
+          SHOULD_DISPLAY_VIEW_COMMIT_BUTTON: true

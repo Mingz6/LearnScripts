@@ -1,0 +1,28 @@
+name: Sync files with target-repsotiory
+
+on: 
+  push:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate_pr_title:
+    name: Sync files with target-repsotiory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: Mingz6/TargetRepo
+          token: ${{ secrets.MINGSYNCTOKEN }}
+
+      - name: Sync files with target-repsotiory
+        # uses: ./.github/actions/sync-repos/action.yml
+        uses: denis-tingajkin/sync-files@v1.0.2
+        with:
+          git-author-email: 'mingz6@github.com'
+          git-author-name: 'Mingz6'
+          sync-repository: Mingz6/SourceRepo
+          sync-branch-name: main
