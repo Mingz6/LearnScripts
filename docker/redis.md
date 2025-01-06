@@ -1,0 +1,1 @@
+Init redis document for later usage purpose
