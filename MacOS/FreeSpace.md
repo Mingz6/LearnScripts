@@ -10,6 +10,8 @@ tmutil deletelocalsnapshots <2025-01-06-052634>
 
 # try to remove all caches
 rm -rf ~/Library/Caches/*
+rm -rf /Library/Caches/*
+rm -rf /System/Library/Caches/*
 
 # remove xcode Junk
 rm -rf ~/Library/Developer/CoreSimulator/Caches
