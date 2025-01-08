@@ -52,4 +52,4 @@ rm -rf ~/Library/Logs
 
 # Images takes lots of space, but I don't know is it safe to delete them
 # cannot be deleted with sudo.
-rm -rf /Library/Developer/CoreSimulator/Images
+<!-- rm -rf /Library/Developer/CoreSimulator/Images -->
