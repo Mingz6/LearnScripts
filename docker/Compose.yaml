@@ -1,0 +1,56 @@
+# Usage: docker compose up -d && docker rm volume_restore && docker image prune -a
+
+services:
+  volume_restore:
+    image: busybox
+    container_name: volume_restore
+    volumes:
+      - sql2022-msttime:/volume_data
+      - .:/backup
+    command: >
+      sh -c "
+      if [ ! -f /volume_data/.restored ]; then
+        echo 'Looking for backup files...';
+        tar xzvf /backup/sql2022-msttime.tar.gz -C /volume_data &&
+        touch /volume_data/.restored;
+      else
+        echo 'Volume already restored.';
+      fi
+      "
+    restart: "no"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql2022-edmT
+    hostname: sql2022-edmT
+    platform: linux/amd64
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Qweasdzxc123"
+      TZ: "America/Edmonton"
+    volumes:
+      - sql2022-msttime:/var/opt/mssql
+    restart: always
+    depends_on:
+      volume_restore:
+        condition: service_completed_successfully
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - sql2022-msttime:/data
+    restart: always
+    depends_on:
+      volume_restore:
+        condition: service_completed_successfully
+
+volumes:
+  sql2022-msttime:
+    name: sql2022-msttime
