@@ -12,7 +12,17 @@ Ensure your Docker container meets the minimum requirements:
 
 To configure these settings, navigate to **Docker Desktop > Settings > Resources > Advanced**.
 
-## Step 3: Launch a Docker Container for SQL Server 2022
+## Steo 4: Restore the database from tar file
+```shell
+docker run --rm -v sql2022-msttime:/volume_data -v $(pwd):/backup busybox tar xzvf /backup/sql2022-msttime.tar.gz -C /volume_data
+```
+### additional note: exoport the volume as backup
+```shell
+docker run --rm -v sql2022-msttime:/volume_data -v $(pwd):/backup busybox tar czvf /backup/sql2022-msttime.tar.gz -C /volume_data .
+```
+
+
+## Step 5: Launch a Docker Container for SQL Server 2022
 The following command creates and starts a new Docker container named `sql2022-edmT` with SQL Server 2022. It sets the SA password, maps port 1433, configures the timezone to `America/Edmonton`, and mounts a volume for persistent storage.
 
 ```shell
@@ -22,7 +32,7 @@ sudo docker run \
    --platform linux/amd64 \
    --restart always \
    -e 'TZ=America/Edmonton' \
-   -v sql2022-edmtime:/var/opt/mssql \
+   -v sql2022-msttime:/var/opt/mssql \
    -d \
    mcr.microsoft.com/mssql/server:2022-latest
 ```
@@ -33,7 +43,7 @@ If your connection string in `secrets.json` doesn’t work, ensure it includes t
 Data Source=localhost,1433;Initial Catalog=YourDb;User Id=sa;Password=<password>;
 ```
 
-## Step 4: Connect to the SQL Server Instance
+## Step 6: Connect to the SQL Server Instance
 1. Open **Azure Data Studio**.
 2. Click **New Connection**.
 3. Enter the following details:
@@ -43,14 +53,13 @@ Data Source=localhost,1433;Initial Catalog=YourDb;User Id=sa;Password=<password>
    - **Password**: `<password>`
 4. Click **Connect**.
 
-## Step 5: Restore a Database
+## Step 7: Restore a Database from local
 
-### Step 5.1: Restore a BACPAC File
+### Step 7.1: Restore a BACPAC File
 1. Open Azure Data Studio.
 2. Use the "Import Data-tier Application" wizard to restore the BACPAC file.
 
-### Step 5.2: Restore a BAK File
-
+### Step 7.2: Restore a BAK File
 #### Copy the Backup File to the Docker Container
 1. Retrieve the Docker container ID:
    ```shell
@@ -65,10 +74,8 @@ Data Source=localhost,1433;Initial Catalog=YourDb;User Id=sa;Password=<password>
 1. Open **Azure Data Studio** and connect to the SQL Server instance.
 2. Use the "Restore Database" option to restore the database from the backup file.
 
-## Step 6: Clean Up
+## Step 7.3: Clean Up
 After restoring the database, remove the backup file from the container to save space:
 ```shell
-docker exec -u root 0c0cdaf2e887 rm /APTIFY.bak
-
-
-docker cp APTIFY.bak 0c0cdaf2e887:/APTIFY.bak
+docker exec -u root <container_id> rm /YourDb.bak
+```
