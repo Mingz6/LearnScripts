@@ -1,5 +1,10 @@
 # Init redis document for later usage purpose
 
+## Redis Stack
+```sh
+docker run -d --name redis-stack-server -p 6379:6379 redis/redis-stack-server:latest
+```
+
 ```bash
 # Create a directory for redis01
 docker run --rm -v sql2022-edmtime:/bitnami/redis/data busybox mkdir -p /bitnami/redis/data/redis01
