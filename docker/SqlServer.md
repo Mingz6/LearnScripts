@@ -18,7 +18,7 @@ docker run --rm -v sql2022-msttime:/volume_data -v $(pwd):/backup busybox tar xz
 ```
 ### additional note: exoport the volume as backup
 ```shell
-docker run --rm -v sql2022-msttime:/volume_data -v $(pwd):/backup busybox tar czvf /backup/sql2022-msttime.tar.gz -C /volume_data .
+docker run --rm -v sql2022-msttime:/volume_data -v $(pwd):/backup busybox tar czvf /backup/sql2022-msttime-<version>.tar.gz -C /volume_data .
 ```
 
 
