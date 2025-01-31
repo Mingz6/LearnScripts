@@ -14,11 +14,11 @@ docker save -o MingsImage2025.tar mingsimage:20250105
 docker load -i MingsImage.tar
 
 # Rename an image
-docker tag mingsimage:20250105 kyo620724/mingsimage:latest
+docker tag mingsimage:20250105 <DockerUserName>/mingsimage:latest
 
 # Push an image to a repository (login required)
 docker login
-docker push kyo620724/mingsimage:latest
+docker push <DockerUserName>/mingsimage:latest
 
 # Note: Remove all Docker containers
 <!-- docker rm $(docker ps -a -q) -->
