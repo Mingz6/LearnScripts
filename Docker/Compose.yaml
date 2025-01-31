@@ -1,4 +1,5 @@
 # Usage: docker compose up -d && docker rm volume_restore && docker image prune -a
+# This will restore the volume and create container with the restored volume. One click solution.
 
 services:
   volume_restore:
