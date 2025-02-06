@@ -14,11 +14,11 @@ To configure these settings, navigate to **Docker Desktop > Settings > Resources
 
 ## Steo 4: Restore the database from tar file
 ```shell
-docker run --rm -v sql2022-msttime:/volume_data -v $(pwd):/backup busybox tar xzvf /backup/sql2022-msttime.tar.gz -C /volume_data
+docker run --rm -v <VolumeName>:/volume_data -v $(pwd):/backup busybox tar xzvf /backup/<VolumeName>.tar.gz -C /volume_data
 ```
 ### additional note: exoport the volume as backup
 ```shell
-docker run --rm -v sql2022-msttime:/volume_data -v $(pwd):/backup busybox tar czvf /backup/sql2022-msttime-<version>.tar.gz -C /volume_data .
+docker run --rm -v <VolumeName>:/volume_data -v $(pwd):/backup busybox tar czvf /backup/<VolumeName>-<version>.tar.gz -C /volume_data .
 ```
 
 
