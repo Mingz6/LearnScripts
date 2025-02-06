@@ -1,5 +1,8 @@
 # LearnGit
 
+Replace Dev with latest prod
+git branch -d dev; git checkout main; git reset --hard origin/main; git checkout -b dev main; git push -f -u origin dev;
+
 To rename folder to capitalize
 1. git config core.ignorecase false
 2. git mv <project>.FuncApps tmp
