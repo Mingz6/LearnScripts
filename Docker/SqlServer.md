@@ -62,11 +62,11 @@ Data Source=localhost,1433;Initial Catalog=YourDb;User Id=sa;Password=<password>
 ### Step 7.2: Restore a BAK File
 #### Copy the Backup File to the Docker Container
 1. Retrieve the Docker container ID:
-   ```shell
+   ```sh
    docker ps
    ```
 2. Copy the backup file into the container:
-   ```shell
+   ```sh
    docker cp YourDb.bak <container_id>:/YourDb.bak
    ```
 
@@ -76,6 +76,6 @@ Data Source=localhost,1433;Initial Catalog=YourDb;User Id=sa;Password=<password>
 
 ## Step 7.3: Clean Up
 After restoring the database, remove the backup file from the container to save space:
-```shell
+```sh
 docker exec -u root <container_id> rm /YourDb.bak
 ```
