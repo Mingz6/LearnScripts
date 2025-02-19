@@ -7,8 +7,11 @@ This document provides useful Git commands and workflows for managing branches, 
 To replace the `dev` branch with the latest `main` branch:
 
 ```sh
-git branch -d dev; git checkout main; git reset --hard origin/main; git checkout -b dev main; git push -f -u origin dev;
-···
+git checkout main; git fetch origin; git reset --hard origin/main; git pull; git branch -d dev;
+git switch --orphan dev; git commit --allow-empty -m "Initial commit on orphan branch";
+git push -f -u origin dev; git checkout main; git branch -d dev;
+git checkout -b dev main; git push -f -u origin dev;
+```
 
 To rename folder to capitalize
 1. git config core.ignorecase false
@@ -38,4 +41,27 @@ git reset -hard origin/main\
 git switch --orphan <new branch>
 git commit --allow-empty -m "Initial commit on orphan branch"
 git push -u origin <new branch>
+```
+
+```zsh
+{
+  old_name="<feature/ming#0000-npupgrade20-prod>"
+  new_name="<feature/ming#0000-nxupgrade21-prod>"
+  remote="origin"
+
+  # Rename the local branch
+  git branch -m "$old_name" "$new_name" &&
+
+  # Delete the old branch on remote
+  git push "$remote" --delete "$old_name" &&
+
+  # Prevent git from using the old name when pushing
+  git branch --unset-upstream "$new_name" &&
+
+  # Push the new branch to remote
+  git push "$remote" "$new_name" &&
+
+  # Reset the upstream branch for the new local branch
+  git push "$remote" -u "$new_name"
+}
 ```
