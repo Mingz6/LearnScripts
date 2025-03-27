@@ -1,0 +1,5 @@
+```sh
+git remote add origin https://<UserName>:<HGToken>@<RepoUrl>
+git remote set-url origin https://<UserName>:<HGToken>@<RepoUrl> 
+git push --set-upstream origin main 
+```sh
