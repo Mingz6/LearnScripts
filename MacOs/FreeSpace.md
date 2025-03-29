@@ -53,3 +53,8 @@ rm -rf ~/Library/Logs
 # Images takes lots of space, but I don't know is it safe to delete them
 # cannot be deleted with sudo.
 <!-- rm -rf /Library/Developer/CoreSimulator/Images -->
+
+# Remove npx cache
+rm -rf ~/.npm/_npx 
+# TODO: check this folder
+rm -rf /private/var/tmp
