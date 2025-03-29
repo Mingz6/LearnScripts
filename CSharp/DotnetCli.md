@@ -35,6 +35,10 @@ Cleans and then builds the project in one command.
 dotnet clean; dotnet build;
 ```
 
+```sh
+cd dotnet/<Domain>/<Enterprise>.<Domain>.<AppName> && func start
+```
+
 Useful [Link](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet)
 
 For more information on .NET CLI commands, visit the official documentation.
