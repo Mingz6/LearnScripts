@@ -130,7 +130,7 @@ def process_patterns_from_config(config_file, dry_run=False):
                 {
                     "description": "Azure ARM Deploy Action",
                     "pattern": r'Azure/arm-deploy@(v\d+(\.\d+)*|main)',
-                    "replacement": "Azure/arm-deploy@v1.0.9"
+                    "replacement": "Azure/arm-deploy@v2"
                 },
                 {
                     "description": "Azure Web App Deploy Action",
