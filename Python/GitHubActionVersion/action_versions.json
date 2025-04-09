@@ -18,7 +18,7 @@
     {
         "description": "Azure ARM Deploy Action",
         "pattern": "Azure/arm-deploy@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "Azure/arm-deploy@v1.0.9"
+        "replacement": "Azure/arm-deploy@v2"
     },
     {
         "description": "Azure Web App Deploy Action",
