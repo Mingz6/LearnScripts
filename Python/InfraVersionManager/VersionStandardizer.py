@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import re
 import sys
@@ -99,58 +97,40 @@ def should_skip_file(filepath):
         
     return False
 
-def process_patterns_from_config(config_file, dry_run=False):
+def process_patterns_from_config(config_file, directory=None, dry_run=False):
     """Process patterns from a configuration file"""
-    current_dir = os.getcwd()
+    if directory is None:
+        # Default to two levels up from current directory
+        current_dir = os.path.dirname(os.path.dirname(os.getcwd()))
+    else:
+        current_dir = directory
     
     # Load configuration
     try:
         with open(config_file, 'r') as f:
             config = json.load(f)
     except FileNotFoundError:
-        print(f"Configuration file '{config_file}' not found!")
-        print("Creating a default configuration file...")
-        config = {
-            "patterns": [
-                {
-                    "description": "Azure Login Action",
-                    "pattern": r'azure/login@(v\d+(\.\d+)*|main)',
-                    "replacement": "azure/login@v2.4.0"
-                },
-                {
-                    "description": "GitHub Checkout Action",
-                    "pattern": r'actions/checkout@(v\d+(\.\d+)*|main)',
-                    "replacement": "actions/checkout@v4.2.2"
-                },
-                {
-                    "description": "Azure CLI Action",
-                    "pattern": r'azure/CLI@(v\d+(\.\d+)*|main)',
-                    "replacement": "Azure/cli@v2.1.0"
-                },
-                {
-                    "description": "Azure ARM Deploy Action",
-                    "pattern": r'Azure/arm-deploy@(v\d+(\.\d+)*|main)',
-                    "replacement": "Azure/arm-deploy@v2"
-                },
-                {
-                    "description": "Azure Web App Deploy Action",
-                    "pattern": r'azure/webapps-deploy@(v\d+(\.\d+)*|main)',
-                    "replacement": "Azure/webapps-deploy@v3.0.1"
-                },
-                {
-                    "description": "Setup Node.js Action",
-                    "pattern": r'actions/setup-node@(v\d+(\.\d+)*|main)',
-                    "replacement": "actions/setup-node@v4.3.0"
-                }
-            ]
+        print(f"Error: Configuration file '{config_file}' not found!")
+        print("Please create the configuration file with the proper format.")
+        print("\nExample format:")
+        print('''{
+    "patterns": [
+        {
+            "description": "GitHub Checkout Action",
+            "pattern": "actions/checkout@(v\\\\d+(\\\\.\\\\d+)*|main)",
+            "replacement": "actions/checkout@v4.2.2"
+        },
+        {
+            "description": "Azure Login Action",
+            "pattern": "azure/login@(v\\\\d+(\\\\.\\\\d+)*|main)",
+            "replacement": "azure/login@v2.3.0"
         }
-        # Save the default configuration
-        with open(config_file, 'w') as f:
-            json.dump(config, f, indent=2)
-        print(f"Default configuration saved to '{config_file}'")
-        print("You can edit this file to customize the patterns and replacements.")
-        print("Run the script again after editing the configuration.")
-        return 0, 0
+    ]
+}''')
+        return 1, 0  # Return error code 1 and 0 replacements
+    except json.JSONDecodeError:
+        print(f"Error: Configuration file '{config_file}' is not valid JSON.")
+        return 1, 0  # Return error code and 0 replacements
 
     print("GitHub Actions Version Standardization Tool")
     print("==========================================")
@@ -186,15 +166,90 @@ def process_patterns_from_config(config_file, dry_run=False):
     
     return total_files_modified, total_replacements_made
 
+def process_bicep_versions_from_config(config_file, directory=None, dry_run=False):
+    """Process Bicep resource version patterns from a configuration file"""
+    if directory is None:
+        # Default to two levels up from current directory
+        current_dir = os.path.dirname(os.path.dirname(os.getcwd()))
+    else:
+        current_dir = directory
+    
+    # Load configuration
+    try:
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: Configuration file '{config_file}' not found!")
+        print("Please create the configuration file with the proper format.")
+        print("\nExample format:")
+        print('''{
+    "patterns": [
+        {
+            "description": "Managed Identity Resource",
+            "pattern": "Microsoft.ManagedIdentity/userAssignedIdentities@(\\\\d{4}-\\\\d{2}-\\\\d{2}(-preview)?)",
+            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview"
+        },
+        {
+            "description": "Key Vault Resource",
+            "pattern": "Microsoft.KeyVault/vaults@(\\\\d{4}-\\\\d{2}-\\\\d{2})",
+            "replacement": "Microsoft.KeyVault/vaults@2024-12-01-preview"
+        }
+    ]
+}''')
+        return 1, 0  # Return error code 1 and 0 replacements
+    except json.JSONDecodeError:
+        print(f"Error: Configuration file '{config_file}' is not valid JSON.")
+        return 1, 0  # Return error code and 0 replacements
+
+    print("Bicep Resource Version Standardization Tool")
+    print("==========================================")
+    print(f"Using configuration file: {config_file}")
+    
+    # Process each pattern in the configuration
+    total_files_modified = 0
+    total_replacements_made = 0
+    patterns_processed = 0
+    
+    for pattern_config in config["patterns"]:
+        description = pattern_config.get("description", "Unnamed pattern")
+        pattern = pattern_config.get("pattern", "")
+        replacement = pattern_config.get("replacement", "")
+        
+        if not pattern or not replacement:
+            print(f"Skipping invalid pattern configuration: {pattern_config}")
+            continue
+            
+        print(f"\nProcessing: {description}")
+        print(f"Pattern: {pattern}")
+        print(f"Replacement: {replacement}")
+        
+        # Perform the find and replace
+        files_modified, replacements_made = find_and_replace(current_dir, pattern, replacement, dry_run)
+        total_files_modified += files_modified
+        total_replacements_made += replacements_made
+        patterns_processed += 1
+    
+    print(f"\nCompleted processing {patterns_processed} Bicep resource version patterns.")
+    print(f"Total files modified: {total_files_modified}")
+    print(f"Total replacements: {total_replacements_made}")
+    
+    return total_files_modified, total_replacements_made
+
 def main():
     """Main entry point for the script"""
-    parser = argparse.ArgumentParser(description='GitHub Actions Version Standardization Tool')
+    # Default directory is two levels up from current directory
+    default_dir = os.path.dirname(os.path.dirname(os.getcwd()))
+    
+    parser = argparse.ArgumentParser(description='GitHub Actions and Bicep Version Standardization Tool')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be changed without modifying files')
-    parser.add_argument('--config', default='action_versions.json', help='Configuration file path (default: action_versions.json)')
+    parser.add_argument('--config', default='GitHubActionVersion.json', help='Configuration file path for GitHub Actions (default: GitHubActionVersion.json)')
+    parser.add_argument('--bicep-config', default='BicepVersion.json', help='Configuration file path for Bicep resources (default: BicepVersion.json)')
     parser.add_argument('--single', action='store_true', help='Run in single pattern mode')
     parser.add_argument('--pattern', help='Regular expression pattern to search for (used with --single)')
     parser.add_argument('--replacement', help='Text to replace matches with (used with --single)')
-    parser.add_argument('--dir', default='.', help='Directory to start search from (default: current directory)')
+    parser.add_argument('--dir', default=default_dir, help=f'Directory to start search from (default: {default_dir})')
+    parser.add_argument('--github-only', action='store_true', help='Process only GitHub Actions versions')
+    parser.add_argument('--bicep-only', action='store_true', help='Process only Bicep resource versions')
     
     args = parser.parse_args()
     
@@ -204,8 +259,8 @@ def main():
             parser.print_help()
             return 1
             
-        print("GitHub Actions Version Standardization Tool - Single Pattern Mode")
-        print("=============================================================")
+        print("Version Standardization Tool - Single Pattern Mode")
+        print("=================================================")
         print(f"Pattern: {args.pattern}")
         print(f"Replacement: {args.replacement}")
         print(f"Directory: {args.dir}")
@@ -213,7 +268,27 @@ def main():
         
         find_and_replace(args.dir, args.pattern, args.replacement, args.dry_run)
     else:
-        process_patterns_from_config(args.config, args.dry_run)
+        # Default behavior: process both unless one is specifically excluded
+        process_github = not args.bicep_only
+        process_bicep = not args.github_only
+        
+        exit_code = 0
+        
+        if process_github:
+            print("\n=== Processing GitHub Actions Versions ===\n")
+            files_modified, replacements_made = process_patterns_from_config(args.config, args.dir, args.dry_run)
+            # If error code 1 was returned, exit with error
+            if files_modified == 1 and replacements_made == 0:
+                exit_code = 1
+        
+        if process_bicep and exit_code == 0:
+            print("\n=== Processing Bicep Resource Versions ===\n")
+            files_modified, replacements_made = process_bicep_versions_from_config(args.bicep_config, args.dir, args.dry_run)
+            # If error code 1 was returned, exit with error
+            if files_modified == 1 and replacements_made == 0:
+                exit_code = 1
+        
+        return exit_code
     
     return 0
 

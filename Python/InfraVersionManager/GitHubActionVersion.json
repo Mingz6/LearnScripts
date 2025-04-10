@@ -3,7 +3,7 @@
     {
         "description": "Azure Login Action",
         "pattern": "azure/login@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "azure/login@v2.4.0"
+        "replacement": "azure/login@v2.3.0"
     },
     {
         "description": "GitHub Checkout Action",

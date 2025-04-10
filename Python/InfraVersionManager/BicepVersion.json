@@ -1,0 +1,145 @@
+{
+    "patterns": [
+        {
+            "description": "Key Vault Resource",
+            "pattern": "Microsoft.KeyVault/vaults@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.KeyVault/vaults@2024-12-01-preview"
+        },
+        {
+            "description": "Key Vault Access Policy Resource",
+            "pattern": "Microsoft.KeyVault/vaults/accessPolicies@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.KeyVault/vaults/accessPolicies@2024-12-01-preview"
+        },
+        {
+            "description": "Managed Identity Resource",
+            "pattern": "Microsoft.ManagedIdentity/userAssignedIdentities@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview"
+        },
+        
+        {
+            "description": "serverfarms Resource",
+            "pattern": "Microsoft.Web/serverfarms@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Web/serverfarms@2024-04-01"
+        },
+        {
+            "description": "Storage Account Resource",
+            "pattern": "Microsoft.Storage/storageAccounts@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Storage/storageAccounts@2024-01-01"
+        },
+        {
+            "description": "Storage Account Blob Service Resource",
+            "pattern": "Microsoft.Storage/storageAccounts/blobServices@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Storage/storageAccounts/blobServices@2024-01-01"
+        },
+        {
+            "description": "Storage Account Queue Service Resource",
+            "pattern": "Microsoft.Storage/storageAccounts/queueServices@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Storage/storageAccounts/queueServices@2024-01-01"
+        },
+        {
+            "description": "Storage Account Queue Service Resource",
+            "pattern": "Microsoft.Storage/storageAccounts/queueServices/queues@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Storage/storageAccounts/queueServices/queues@2024-01-01"
+        },
+        {
+            "description": "Storage Account Blob Service Resource",
+            "pattern": "Microsoft.Storage/storageAccounts/blobServices/containers@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Storage/storageAccounts/blobServices/containers@2024-01-01"
+        },
+        {
+            "description": "Storage Account Table Service Resource",
+            "pattern": "Microsoft.Storage/storageAccounts/tableServices@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Storage/storageAccounts/tableServices@2024-01-01"
+        },
+        {
+            "description": "Service Bus Namespace Resource",
+            "pattern": "Microsoft.ServiceBus/namespaces@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ServiceBus/namespaces@2024-01-01"
+        },
+        {
+            "description": "Role Definition Resource",
+            "pattern": "Microsoft.Authorization/roleDefinitions@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Authorization/roleDefinitions@2022-05-01-preview"
+        },
+        {
+            "description": "SQL Server Resource",
+            "pattern": "Microsoft.Sql/servers@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Sql/servers@2024-05-01-preview"
+        },
+        {
+            "description": "Role Assignment Resource",
+            "pattern": "Microsoft.Authorization/roleAssignments@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Authorization/roleAssignments@2022-04-01"
+        },
+        {
+            "description": "Key Vault Secret Resource",
+            "pattern": "Microsoft.KeyVault/vaults/secrets@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.KeyVault/vaults/secrets@2024-12-01-preview"
+        },
+        {
+            "description": "Redis Cache Resource",
+            "pattern": "Microsoft.Cache/redis@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cache/redis@2024-11-01"
+        },
+        {
+            "description": "Web App Resource",
+            "pattern": "Microsoft.Web/sites@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Web/sites@2024-04-01"
+        },
+        {
+            "description": "Application Insights Resource",
+            "pattern": "Microsoft.Insights/components@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Insights/components@2020-02-02"
+        },
+        {
+            "description": "API Management Product Resource",
+            "pattern": "Microsoft.ApiManagement/service/products@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/products@2024-06-01-preview"
+        },
+        {
+            "description": "API Management Named Value Resource",
+            "pattern": "Microsoft.ApiManagement/service/namedValues@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/namedValues@2024-06-01-preview"
+        },
+        {
+            "description": "API Management Logger Resource",
+            "pattern": "Microsoft.ApiManagement/service/loggers@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/loggers@2024-06-01-preview"
+        },
+        {
+            "description": "API Management Diagnostic Resource",
+            "pattern": "Microsoft.ApiManagement/service/diagnostics@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/diagnostics@2024-06-01-preview"
+        },
+        {
+            "description": "API Management API Resource",
+            "pattern": "Microsoft.ApiManagement/service/apis@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/apis@2024-06-01-preview"
+        },
+        {
+            "description": "API Management API Policy Resource",
+            "pattern": "Microsoft.ApiManagement/service/apis/policies@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/apis/policies@2024-06-01-preview"
+        },
+        {
+            "description": "API Management API Policy Resource",
+            "pattern": "Microsoft.ApiManagement/service/products/apis@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/products/apis@2024-06-01-preview"
+        },
+        {
+            "description": "SignalR Service Resource",
+            "pattern": "Microsoft.SignalRService/signalR@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.SignalRService/signalR@2024-10-01-preview"
+        },
+        {
+            "description": "API Management Service Resource",
+            "pattern": "Microsoft.ApiManagement/service@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service@2024-06-01-preview"
+        },
+        {
+            "description": "Microsoft.Resources/deploymentScripts Resource",
+            "pattern": "Microsoft.Resources/deploymentScripts@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Resources/deploymentScripts@2023-08-01"
+        }
+    ]
+}
