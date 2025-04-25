@@ -186,12 +186,12 @@ def process_bicep_versions_from_config(config_file, directory=None, dry_run=Fals
     "patterns": [
         {
             "description": "Managed Identity Resource",
-            "pattern": "Microsoft.ManagedIdentity/userAssignedIdentities@(\\\\d{4}-\\\\d{2}-\\\\d{2}(-preview)?)",
-            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview"
+            "pattern": "Microsoft.ManagedIdentity/userAssignedIdentities@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30"
         },
         {
             "description": "Key Vault Resource",
-            "pattern": "Microsoft.KeyVault/vaults@(\\\\d{4}-\\\\d{2}-\\\\d{2})",
+            "pattern": "Microsoft.KeyVault/vaults@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
             "replacement": "Microsoft.KeyVault/vaults@2024-12-01-preview"
         }
     ]

@@ -13,7 +13,7 @@
         {
             "description": "Managed Identity Resource",
             "pattern": "Microsoft.ManagedIdentity/userAssignedIdentities@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview"
+            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30"
         },
         
         {
@@ -140,6 +140,11 @@
             "description": "Microsoft.Resources/deploymentScripts Resource",
             "pattern": "Microsoft.Resources/deploymentScripts@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
             "replacement": "Microsoft.Resources/deploymentScripts@2023-08-01"
+        },
+        {
+            "description": "Microsoft.Search/searchServices Resource",
+            "pattern": "Microsoft.Search/searchServices@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Search/searchServices@2025-02-01-preview"
         }
     ]
 }
