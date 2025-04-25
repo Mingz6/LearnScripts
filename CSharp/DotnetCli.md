@@ -24,19 +24,24 @@ dotnet clean
 
 Rebuild Project
 Cleans and then builds the project.
+--no-incremental: Forces a full rebuild, ignoring any cached build outputs.
+-v minimal: Sets the output verbosity to "minimal" — you'll only see essential info (warnings, errors, and a final summary).
 ```sh
-dotnet build --no-incremental
+dotnet build --no-incremental -v minimal
 ```
 
 Combined Clean and Build
 Cleans and then builds the project in one command.
 
 ```sh
-dotnet clean; dotnet build;
+dotnet clean; dotnet build | grep -i "error";
 ```
 
+### Run Project
 ```sh
-cd dotnet/<Domain>/<Enterprise>.<Domain>.<AppName> && func start
+cd dotnet/<Domain>/<System>.<Domain>.<AppName> && func start;
+
+func host start --port <7110> --verbose
 ```
 
 Useful [Link](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet)
