@@ -1,16 +1,27 @@
+-- Get detailed information about all database files (data and log)
 SELECT 
-    CAST((SUM(reserved_page_count) * 8192.0) / 1024 / 1024 / 1024 AS DECIMAL(10, 2)) AS DbSizeInGB
-FROM 
-    sys.dm_db_partition_stats;
+    DB_NAME(f.database_id) AS DatabaseName,
+    f.name AS LogicalFileName,
+    f.type_desc AS FileType,
+    f.physical_name AS PhysicalFilePath,
+    CAST(f.size * 8192.0 / 1024 / 1024 / 1024 AS DECIMAL(10,2)) AS FileSizeGB,
+    CAST(f.max_size * 8192.0 / 1024 / 1024 / 1024 AS DECIMAL(10,2)) AS MaxSizeGB,
+    f.growth AS GrowthSetting,
+    CASE 
+        WHEN f.is_percent_growth = 1 THEN 'Percent'
+        ELSE 'MB'
+    END AS GrowthType,
+    d.recovery_model_desc AS RecoveryModel
+FROM sys.master_files f
+JOIN sys.databases d ON f.database_id = d.database_id
+ORDER BY DB_NAME(f.database_id), f.type_desc;
 
+-- Then shrink the log file
+USE <YourDatabaseName>;  -- Replace with your database name
+GO
 
-EXEC sp_helpfile;
-
--- 將資料庫切換到 SIMPLE 模式
-ALTER DATABASE ECDB_DevLocal SET RECOVERY SIMPLE;
-
--- 強制釋放未使用的日誌空間，縮小到 128MB（或你希望的大小）
-DBCC SHRINKFILE (ECDB_DevLocal_log, 128);
+ALTER DATABASE <YourDatabaseName> SET RECOVERY SIMPLE;
+DBCC SHRINKFILE('<YourLogFileName>', 100);  -- Shrink to 100 MB
 
 -- 查詢目前檔案空間狀況（看看有多少空間可釋放）
 SELECT
