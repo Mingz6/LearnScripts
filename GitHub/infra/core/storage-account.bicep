@@ -21,7 +21,7 @@ param storageAccountNames array = [
 ]
 
 // Create storages
-resource storageAccounts 'Microsoft.Storage/storageAccounts@2022-09-01' = [for stName in storageAccountNames: {
+resource storageAccounts 'Microsoft.Storage/storageAccounts@2025-01-01' = [for stName in storageAccountNames: {
   name: stName
   location: location
   kind: 'StorageV2'
@@ -90,7 +90,7 @@ resource storageAccount_default 'Microsoft.Storage/storageAccounts/managementPol
 }]
 
 // Create blob service
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = [for i in range(0, length(storageAccountNames)): {
+resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2025-01-01' = [for i in range(0, length(storageAccountNames)): {
   name: 'default'
   parent: storageAccounts[i]
   properties: {
@@ -108,7 +108,7 @@ param stmingzenviromentContainerNames array = [
   '$web'
   'app-resources'
 ]
-resource stmingzEnviromentcontainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = [for containerName in stmingzenviromentContainerNames: {
+resource stmingzEnviromentcontainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2025-01-01' = [for containerName in stmingzenviromentContainerNames: {
   name: containerName
   parent: blobServices[0]
   properties: {
@@ -126,7 +126,7 @@ param stmingzsecondEnviromentContainerNames array = [
   'handlebartemplates'
   'nurse-uploaded-files'
 ]
-resource stmingzsecondEnviromentcontainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = [for containerName in stmingzsecondEnviromentContainerNames: {
+resource stmingzsecondEnviromentcontainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2025-01-01' = [for containerName in stmingzsecondEnviromentContainerNames: {
   name: containerName
   parent: blobServices[1]
   properties: {
@@ -137,7 +137,7 @@ resource stmingzsecondEnviromentcontainers 'Microsoft.Storage/storageAccounts/bl
   }
 }]
 
-resource storageQueues 'Microsoft.Storage/storageAccounts/queueServices@2022-09-01' = [for i in range(0, length(storageAccountNames)): {
+resource storageQueues 'Microsoft.Storage/storageAccounts/queueServices@2024-01-01' = [for i in range(0, length(storageAccountNames)): {
   name: 'default'
   parent: storageAccounts[i]
   properties: {
@@ -153,7 +153,7 @@ param stmingzEnviromentQueueNames array = [
   'myfirstqueue'
   'mysecondqueue'
 ]
-resource firstQueue 'Microsoft.Storage/storageAccounts/queueServices/queues@2022-09-01' = [for queueName in stmingzEnviromentQueueNames: {
+resource firstQueue 'Microsoft.Storage/storageAccounts/queueServices/queues@2025-01-01' = [for queueName in stmingzEnviromentQueueNames: {
   name: queueName
   parent: storageQueues[0]
   properties: {
@@ -161,7 +161,7 @@ resource firstQueue 'Microsoft.Storage/storageAccounts/queueServices/queues@2022
 }]
 
 // Create Table for all storage accounts
-resource stmingzEnviromentTables 'Microsoft.Storage/storageAccounts/tableServices@2022-09-01' = [for i in range(0, length(storageAccountNames)): {
+resource stmingzEnviromentTables 'Microsoft.Storage/storageAccounts/tableServices@2025-01-01' = [for i in range(0, length(storageAccountNames)): {
   name: 'default'
   parent: storageAccounts[i]
   properties: {

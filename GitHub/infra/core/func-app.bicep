@@ -37,7 +37,7 @@ var basicAppSettings = [
 
 var completeAppSettings = concat(basicAppSettings, appSettings)
 
-resource azureFunctionApp 'Microsoft.Web/sites@2022-09-01' = {
+resource azureFunctionApp 'Microsoft.Web/sites@2024-11-01' = {
   name: funcAppName
   location: location
   kind: 'functionapp'

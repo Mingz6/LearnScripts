@@ -20,13 +20,13 @@ param storageAccountNames array = [
   'stmingzsecond${environmentName}'
 ]
 
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview' = {
   name: '${abbrs.managedIdentityUserAssignedIdentities}-mingz-${environmentName}'
   location: location
 }
 
 // Managed ID need storage account contributor role to execute the following script.
-resource staticWebsiteScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+resource staticWebsiteScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'configureStaticWebsite'
   location: location
   tags: tags

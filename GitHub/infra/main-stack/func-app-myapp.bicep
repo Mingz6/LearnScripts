@@ -47,11 +47,11 @@ module myappAzureFunctions '../core/func-app.bicep' = {
   }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' existing = {
   name: storageAccountName
 }
 
-resource mingzAppStorageQueues 'Microsoft.Storage/storageAccounts/queueServices@2022-09-01' = {
+resource mingzAppStorageQueues 'Microsoft.Storage/storageAccounts/queueServices@2024-01-01' = {
   name: 'default'
   parent: storageAccount
   properties: {
@@ -61,7 +61,7 @@ resource mingzAppStorageQueues 'Microsoft.Storage/storageAccounts/queueServices@
   }
 }
 
-resource myQueue 'Microsoft.Storage/storageAccounts/queueServices/queues@2022-09-01' = {
+resource myQueue 'Microsoft.Storage/storageAccounts/queueServices/queues@2025-01-01' = {
   name: 'myqueue-creation'
   parent: mingzAppStorageQueues
   properties: {}

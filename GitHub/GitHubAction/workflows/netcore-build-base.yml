@@ -39,10 +39,10 @@ jobs:
       publishOutput: 'publish_output'
 
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.2.2
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v4.3.1
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
 
@@ -62,7 +62,7 @@ jobs:
           dotnet publish ${{ env.project }} --configuration ${{ env.buildConfiguration }} --output ${{ github.workspace }}/${{ env.publishOutput }}
 
       - name: 'AZ Login'
-        uses: azure/login@v1.6.0
+        uses: azure/login@v2.3.0
         with:
           client-id: ${{ secrets.azure_client_id }}
           tenant-id: ${{ secrets.azure_tenant_id }}
@@ -70,7 +70,7 @@ jobs:
           enable-AzPSSession: true
 
       - name: Deploy to Azure Web App Staging Slot
-        uses: azure/webapps-deploy@v3
+        uses: Azure/webapps-deploy@v3.0.6
         with:
           app-name: ${{ inputs.web_app_name }}
           publish-profile: ${{ secrets.publish_profile }}

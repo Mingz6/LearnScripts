@@ -10,7 +10,7 @@ param location string = resourceGroup().location
 
 var abbrs = loadJsonContent('../abbreviations.json')
 
-resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: '${abbrs.webServerFarms}-mingz-${environmentName}'
   location: location
   sku: {

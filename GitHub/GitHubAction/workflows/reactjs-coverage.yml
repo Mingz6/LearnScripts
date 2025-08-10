@@ -14,8 +14,8 @@ jobs:
     outputs:
       MyApp: ${{ steps.filter.outputs.MyApp }}
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: dorny/paths-filter@v2.11.1
+      - uses: actions/checkout@v4.2.2
+      - uses: dorny/paths-filter@v3.0.2
         id: filter
         with:
           filters: |
@@ -29,10 +29,10 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
 
       - name: Set up node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 18
 
@@ -62,7 +62,7 @@ jobs:
       - name: Add ReactJS Code Coverage PR Comment
         # post results even if previous action 'fails' due to low code coverage
         if: ${{ success() || failure() }}
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v2.9.4
         with:
           header: ReactJS Coverage
           message: ReactJS coverage for pull request

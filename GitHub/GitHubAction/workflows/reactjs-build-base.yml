@@ -38,10 +38,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
 
       - name: Install Node.js
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: '18.x'
 
@@ -56,7 +56,7 @@ jobs:
           ${{ inputs.build_command }}
 
       - name: 'Login via Azure CLI'
-        uses: azure/login@v1.6.0
+        uses: azure/login@v2.3.0
         with:
           client-id: ${{ secrets.azure_client_id }}
           tenant-id: ${{ secrets.azure_tenant_id }}

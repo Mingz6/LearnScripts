@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: My first step - check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - name: My second step - get branch name
         uses: ./.github/actions/github-branch-check
     

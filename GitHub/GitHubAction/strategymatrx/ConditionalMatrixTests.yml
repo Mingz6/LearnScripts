@@ -19,7 +19,7 @@ jobs:
     outputs:
       dynamicMatrix: ${{ steps.setmatrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.2.2
         with:
           sparse-checkout: |
             dotnet/
@@ -56,12 +56,12 @@ jobs:
   build_project:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.2.2
         with:
           sparse-checkout: |
             dotnet/
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.0.0
+        uses: actions/setup-dotnet@v4.3.1
         with:
           dotnet-version: 6.x
       - name: Build
@@ -128,7 +128,7 @@ jobs:
 
       - name: Add Coverage PR Comment
         if: ${{ success() || failure() }}
-        uses: marocchino/sticky-pull-request-comment@v2.9.0
+        uses: marocchino/sticky-pull-request-comment@v2.9.4
         with:
           recreate: true
           path: code-coverage-results.md

@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
 
       - name: Filter Changes
-        uses: dorny/paths-filter@v2.11.1
+        uses: dorny/paths-filter@v3.0.2
         id: filter
         with:
           filters: |
@@ -39,9 +39,9 @@ jobs:
       buildConfiguration: 'Release'
 
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.2.2
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4.3.1
         with:
           dotnet-version: 6.0.x
 
@@ -69,7 +69,7 @@ jobs:
 
       - name: Add Coverage PR Comment
         if: ${{ success() || failure() }}
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v2.9.4
         with:
           recreate: true
           path: code-coverage-results.md

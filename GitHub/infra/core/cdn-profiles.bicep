@@ -16,7 +16,7 @@ var cdnWebApplicationFirewallPolicies_wafCdn_externalid = resourceId('<shared-re
 param cdnProfilesParams object
 param cdnProfiles array = cdnProfilesParams[environmentName]
 
-resource storageAccountResource 'Microsoft.Storage/storageAccounts@2022-09-01' existing =  [for (cdnProfile, index) in cdnProfiles: {
+resource storageAccountResource 'Microsoft.Storage/storageAccounts@2025-01-01' existing =  [for (cdnProfile, index) in cdnProfiles: {
   name: cdnProfiles[index].cdnStorageAccountName
 }]
 

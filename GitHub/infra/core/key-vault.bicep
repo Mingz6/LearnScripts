@@ -22,7 +22,7 @@ var base = 'mingz'
 // Add more func apps name here.
 var myFuncAppName = '${abbrs.webSitesFunctions}-${base}-myfuncapp-${environmentName}'
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
   name: '${abbrs.keyVaultVaults}-${base}-${environmentName}'
   location: location
   tags: tags
@@ -40,7 +40,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-resource AuthAppKeyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = {
+resource AuthAppKeyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2024-12-01-preview' = {
   parent: keyVault
   name: 'add'
   properties: {

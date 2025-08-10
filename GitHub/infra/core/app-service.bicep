@@ -56,11 +56,11 @@ var appSettings = isSecondApp? concat(
   moreAppSettings
 ) : webAppSettings
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' existing = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' existing = {
   name: '${abbrs.webServerFarms}-${base}-${environmentName}'
 }
 
-resource webApp 'Microsoft.Web/sites@2022-09-01' = {
+resource webApp 'Microsoft.Web/sites@2024-11-01' = {
   name: webAppProfile.webAppName
   location: location
   identity: {

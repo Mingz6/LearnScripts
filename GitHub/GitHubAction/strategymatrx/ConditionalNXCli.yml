@@ -16,7 +16,7 @@ jobs:
       pull-requests: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.2.2
         with:
           sparse-checkout: |
             react/
@@ -49,7 +49,7 @@ jobs:
           echo "commands=$commands" >> $GITHUB_ENV
 
       - name: Set up node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
       - name: Install dependencies
@@ -78,7 +78,7 @@ jobs:
 
       - name: Add Code Coverage PR Comment
         if: ${{ env.change_count > 0 && (success() || failure()) }}
-        uses: marocchino/sticky-pull-request-comment@v2.9.0
+        uses: marocchino/sticky-pull-request-comment@v2.9.4
         with:
           header: ReactJS Coverage
           message: ReactJS coverage for pull request
