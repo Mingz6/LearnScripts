@@ -17,3 +17,7 @@ npx nx storybook <StoryBookName>
 npx nx build <StoryBookName>
 npx serve dist/storybook/<StoryBookName>
 npx nx lint <StoryBookName>
+
+
+Trick:
+npx nx reset
