@@ -13,23 +13,92 @@
         {
             "description": "Managed Identity Resource",
             "pattern": "Microsoft.ManagedIdentity/userAssignedIdentities@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30"
+            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview"
         },
-        
         {
             "description": "serverfarms Resource",
             "pattern": "Microsoft.Web/serverfarms@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Web/serverfarms@2024-04-01"
+            "replacement": "Microsoft.Web/serverfarms@2024-11-01"
+        },
+        {
+            "description": "Cdn profile",
+            "pattern": "Microsoft.Cdn/profiles@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cdn/profiles@2025-06-01"
+        },
+        {
+            "description": "Cdn profile afdEndpoints",
+            "pattern": "Microsoft.Cdn/profiles/afdEndpoints@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cdn/profiles/afdEndpoints@2025-06-01"
+        },
+        {
+            "description": "Cdn profile originGroups",
+            "pattern": "Microsoft.Cdn/profiles/originGroups@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cdn/profiles/originGroups@2025-06-01"
+        },
+        {
+            "description": "Cdn profile originGroups origin",
+            "pattern": "Microsoft.Cdn/profiles/originGroups/origins@@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cdn/profiles/originGroups/origins@2025-06-01"
+        },
+        {
+            "description": "Cdn profile customDomains",
+            "pattern": "Microsoft.Cdn/profiles/customDomains@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cdn/profiles/customDomains@2025-06-01"
+        },
+        {
+            "description": "Network frontDoorWebApplicationFirewallPolicies",
+            "pattern": "Microsoft.Network/frontDoorWebApplicationFirewallPolicies@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2025-03-01"
+        },
+        {
+            "description": "Network securityPolicies",
+            "pattern": "Microsoft.Cdn/profiles/securityPolicies@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cdn/profiles/securityPolicies@2025-06-01"
+        },
+        {
+            "description": "Network afdEndpoints routes",
+            "pattern": "Microsoft.Cdn/profiles/afdEndpoints/routes@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Cdn/profiles/afdEndpoints/routes@2025-06-01"
+        },
+        {
+            "description": "DNS zone",
+            "pattern": "Microsoft.Network/dnsZones@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Network/dnsZones@2023-07-01-preview"
+        },
+        {
+            "description": "DNS zone cname",
+            "pattern": "Microsoft.Network/dnsZones/CNAME@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Network/dnsZones/CNAME@2023-07-01-preview"
+        },
+        {
+            "description": "DNS zone TXT",
+            "pattern": "Microsoft.Network/dnsZones/TXT@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Network/dnsZones/TXT@2023-07-01-preview"
+        },
+        {
+            "description": "DNS zone A",
+            "pattern": "Microsoft.Network/dnsZones/A@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Network/dnsZones/A@2023-07-01-preview"
+        },
+        {
+            "description": "staticSites",
+            "pattern": "Microsoft.Web/staticSites@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Web/staticSites@2024-11-01"
+        },
+        {
+            "description": "staticSites linkedBackends",
+            "pattern": "Microsoft.Web/staticSites/linkedBackends@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.Web/staticSites/linkedBackends@2022-03-01"
         },
         {
             "description": "Storage Account Resource",
             "pattern": "Microsoft.Storage/storageAccounts@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Storage/storageAccounts@2024-01-01"
+            "replacement": "Microsoft.Storage/storageAccounts@2025-01-01"
         },
         {
             "description": "Storage Account Blob Service Resource",
             "pattern": "Microsoft.Storage/storageAccounts/blobServices@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Storage/storageAccounts/blobServices@2024-01-01"
+            "replacement": "Microsoft.Storage/storageAccounts/blobServices@2025-01-01"
         },
         {
             "description": "Storage Account Queue Service Resource",
@@ -39,22 +108,37 @@
         {
             "description": "Storage Account Queue Service Resource",
             "pattern": "Microsoft.Storage/storageAccounts/queueServices/queues@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Storage/storageAccounts/queueServices/queues@2024-01-01"
+            "replacement": "Microsoft.Storage/storageAccounts/queueServices/queues@2025-01-01"
         },
         {
             "description": "Storage Account Blob Service Resource",
             "pattern": "Microsoft.Storage/storageAccounts/blobServices/containers@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Storage/storageAccounts/blobServices/containers@2024-01-01"
+            "replacement": "Microsoft.Storage/storageAccounts/blobServices/containers@2025-01-01"
         },
         {
             "description": "Storage Account Table Service Resource",
             "pattern": "Microsoft.Storage/storageAccounts/tableServices@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Storage/storageAccounts/tableServices@2024-01-01"
+            "replacement": "Microsoft.Storage/storageAccounts/tableServices@2025-01-01"
         },
         {
             "description": "Service Bus Namespace Resource",
             "pattern": "Microsoft.ServiceBus/namespaces@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.ServiceBus/namespaces@2024-01-01"
+            "replacement": "Microsoft.ServiceBus/namespaces@2025-05-01-preview"
+        },
+        {
+            "description": "Service Bus Namespace Topics",
+            "pattern": "Microsoft.ServiceBus/namespaces/topics@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ServiceBus/namespaces/topics@2025-05-01-preview"
+        },
+        {
+            "description": "Service Bus Namespace Topics Subscriptions",
+            "pattern": "Microsoft.ServiceBus/namespaces/topics/subscriptions@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ServiceBus/namespaces/topics/subscriptions@2025-05-01-preview"
+        },
+        {
+            "description": "Service Bus Namespace Topics Subscriptions Rules",
+            "pattern": "Microsoft.ServiceBus/namespaces/topics/subscriptions/rules@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ServiceBus/namespaces/topics/subscriptions/rules@2025-05-01-preview"
         },
         {
             "description": "Role Definition Resource",
@@ -64,7 +148,7 @@
         {
             "description": "SQL Server Resource",
             "pattern": "Microsoft.Sql/servers@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Sql/servers@2024-05-01-preview"
+            "replacement": "Microsoft.Sql/servers@2024-11-01-preview"
         },
         {
             "description": "Role Assignment Resource",
@@ -84,7 +168,7 @@
         {
             "description": "Web App Resource",
             "pattern": "Microsoft.Web/sites@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Web/sites@2024-04-01"
+            "replacement": "Microsoft.Web/sites@2024-11-01"
         },
         {
             "description": "Application Insights Resource",
@@ -127,9 +211,14 @@
             "replacement": "Microsoft.ApiManagement/service/products/apis@2024-06-01-preview"
         },
         {
+            "description": "API Management API Policy Resource",
+            "pattern": "Microsoft.ApiManagement/service/products/policies@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
+            "replacement": "Microsoft.ApiManagement/service/products/policies@2024-06-01-preview"
+        },
+        {
             "description": "SignalR Service Resource",
             "pattern": "Microsoft.SignalRService/signalR@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.SignalRService/signalR@2024-10-01-preview"
+            "replacement": "Microsoft.SignalRService/signalR@2025-01-01-preview"
         },
         {
             "description": "API Management Service Resource",
@@ -144,7 +233,7 @@
         {
             "description": "Microsoft.Search/searchServices Resource",
             "pattern": "Microsoft.Search/searchServices@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.Search/searchServices@2025-02-01-preview"
+            "replacement": "Microsoft.Search/searchServices@2025-05-01"
         }
     ]
 }

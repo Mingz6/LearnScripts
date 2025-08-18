@@ -187,7 +187,7 @@ def process_bicep_versions_from_config(config_file, directory=None, dry_run=Fals
         {
             "description": "Managed Identity Resource",
             "pattern": "Microsoft.ManagedIdentity/userAssignedIdentities@(\\d{4}-\\d{2}-\\d{2}(?:-preview)?)",
-            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30"
+            "replacement": "Microsoft.ManagedIdentity/userAssignedIdentities@2025-01-31-preview"
         },
         {
             "description": "Key Vault Resource",
@@ -237,8 +237,6 @@ def process_bicep_versions_from_config(config_file, directory=None, dry_run=Fals
 
 def main():
     """Main entry point for the script"""
-    # Default directory is two levels up from current directory
-    default_dir = os.path.dirname(os.path.dirname(os.getcwd()))
     
     parser = argparse.ArgumentParser(description='GitHub Actions and Bicep Version Standardization Tool')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be changed without modifying files')
@@ -247,9 +245,29 @@ def main():
     parser.add_argument('--single', action='store_true', help='Run in single pattern mode')
     parser.add_argument('--pattern', help='Regular expression pattern to search for (used with --single)')
     parser.add_argument('--replacement', help='Text to replace matches with (used with --single)')
-    parser.add_argument('--dir', default=default_dir, help=f'Directory to start search from (default: {default_dir})')
+    parser.add_argument('--upper-level', action='store_true', help='Go up one more directory level (3 levels up instead of 2)')
+    parser.add_argument('--dir', help='Directory to start search from (overrides default directory calculation)')
     parser.add_argument('--github-only', action='store_true', help='Process only GitHub Actions versions')
     parser.add_argument('--bicep-only', action='store_true', help='Process only Bicep resource versions')
+    
+    args = parser.parse_args()
+    
+    # Calculate default directory based on --upper-level flag
+    if args.dir:
+        default_dir = args.dir
+    elif args.upper_level:
+        # Go up three levels from current directory
+        default_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.getcwd())))
+    else:
+        # Default: go up two levels from current directory
+        default_dir = os.path.dirname(os.path.dirname(os.getcwd()))
+    
+    # Update the help text for --dir argument
+    if not hasattr(parser, '_dir_help_updated'):
+        for action in parser._actions:
+            if action.dest == 'dir':
+                action.help = f'Directory to start search from (default: {default_dir})'
+                break
     
     args = parser.parse_args()
     
@@ -263,10 +281,10 @@ def main():
         print("=================================================")
         print(f"Pattern: {args.pattern}")
         print(f"Replacement: {args.replacement}")
-        print(f"Directory: {args.dir}")
+        print(f"Directory: {default_dir}")
         print(f"Dry run: {args.dry_run}")
         
-        find_and_replace(args.dir, args.pattern, args.replacement, args.dry_run)
+        find_and_replace(default_dir, args.pattern, args.replacement, args.dry_run)
     else:
         # Default behavior: process both unless one is specifically excluded
         process_github = not args.bicep_only
@@ -276,14 +294,14 @@ def main():
         
         if process_github:
             print("\n=== Processing GitHub Actions Versions ===\n")
-            files_modified, replacements_made = process_patterns_from_config(args.config, args.dir, args.dry_run)
+            files_modified, replacements_made = process_patterns_from_config(args.config, default_dir, args.dry_run)
             # If error code 1 was returned, exit with error
             if files_modified == 1 and replacements_made == 0:
                 exit_code = 1
         
         if process_bicep and exit_code == 0:
             print("\n=== Processing Bicep Resource Versions ===\n")
-            files_modified, replacements_made = process_bicep_versions_from_config(args.bicep_config, args.dir, args.dry_run)
+            files_modified, replacements_made = process_bicep_versions_from_config(args.bicep_config, default_dir, args.dry_run)
             # If error code 1 was returned, exit with error
             if files_modified == 1 and replacements_made == 0:
                 exit_code = 1

@@ -23,12 +23,12 @@
     {
         "description": "Azure Web App Deploy Action",
         "pattern": "azure/webapps-deploy@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "Azure/webapps-deploy@v3.0.1"
+        "replacement": "Azure/webapps-deploy@v3.0.6"
     },
     {
         "description": "Setup Node.js Action",
         "pattern": "actions/setup-node@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "actions/setup-node@v4.3.0"
+        "replacement": "actions/setup-node@v4.4.0"
     },
     {
         "description": "Setup .NET Action",
@@ -41,19 +41,39 @@
         "replacement": "dorny/paths-filter@v3.0.2"
     },
     {
+        "description": "Coverage Report Action",
+        "pattern": "irongut/CodeCoverageSummary@(v\\d+(\\.\\d+)*|main)",
+        "replacement": "irongut/CodeCoverageSummary@v1.3.0"
+    },
+    {
         "description": "marocchino Sticky Pull Request Comment Action",
         "pattern": "marocchino/sticky-pull-request-comment@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "marocchino/sticky-pull-request-comment@v2.9.1"
+        "replacement": "marocchino/sticky-pull-request-comment@v2.9.4"
     },
     {
         "description": "Azure Functions Action",
         "pattern": "Azure/functions-action@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "Azure/functions-action@v1.5.2"
+        "replacement": "Azure/functions-action@v1.5.3"
     },
     {
         "description": "Azure Bicep Deploy Action",
         "pattern": "Azure/bicep-deploy@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "Azure/bicep-deploy@v2.1.0"
+        "replacement": "Azure/bicep-deploy@v2.2.0"
+    },
+    {
+        "description": "codeql-action init Action",
+        "pattern": "github/codeql-action/init@(v\\d+(\\.\\d+)*|main)",
+        "replacement": "github/codeql-action/init@v3.29.8"
+    },
+    {
+        "description": "codeql-action autobuild Action",
+        "pattern": "github/codeql-action/autobuild@(v\\d+(\\.\\d+)*|main)",
+        "replacement": "github/codeql-action/autobuild@v3.29.8"
+    },
+    {
+        "description": "codeql-action analyze Action",
+        "pattern": "github/codeql-action/analyze@(v\\d+(\\.\\d+)*|main)",
+        "replacement": "github/codeql-action/analyze@v3.29.8"
     }
     ]
 }
