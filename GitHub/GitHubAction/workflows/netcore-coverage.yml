@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
 
       - name: Filter Changes
-        uses: dorny/paths-filter@v3.0.2
+        uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -39,9 +39,9 @@ jobs:
       buildConfiguration: 'Release'
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
       - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v4.3.1
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 6.0.x
 
@@ -55,7 +55,7 @@ jobs:
         run: dotnet test --collect:"Xplat Code Coverage" --settings:test.runsettings --no-build --no-restore --configuration ${{ env.buildConfiguration }}
 
       - name: Generate Code Coverage Report
-        uses: irongut/CodeCoverageSummary@v1.3.0
+        uses: irongut/CodeCoverageSummary@v1
         with:
           filename: "**/coverage.cobertura.xml"
           badge: true
@@ -69,7 +69,7 @@ jobs:
 
       - name: Add Coverage PR Comment
         if: ${{ success() || failure() }}
-        uses: marocchino/sticky-pull-request-comment@v2.9.4
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
           recreate: true
           path: code-coverage-results.md

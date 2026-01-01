@@ -60,7 +60,7 @@ jobs:
 
     steps:
     - name: Checkout REPO
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.pull_request.head.sha }}
         fetch-depth: 0
@@ -116,7 +116,7 @@ jobs:
     environment: ${{needs.Setup.outputs.ENV_NAME}}
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
 
   SendNotification:
     if: ${{ always() }}
