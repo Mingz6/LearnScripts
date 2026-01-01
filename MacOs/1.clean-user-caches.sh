@@ -29,6 +29,9 @@ Options:
   --exclude-logs       Do NOT delete ~/Library/Logs (and Microsoft container Diagnostics logs)
   --exclude-wallpaper-aerials  Do NOT delete Apple Aerials wallpaper/screensaver videos (~com.apple.wallpaper/aerials)
   --include-wallpaper-aerials  Alias: include Apple Aerials videos even if excluded
+  --delete-zsh-backups   Delete local zsh backup folders (~/zsh-backup-* and repo MacOs/zsh-backups) (default)
+  --exclude-zsh-backups  Do NOT delete local zsh backup folders
+  --exclude-zsh-compdump Do NOT delete zsh completion dump caches (~/.zcompdump*)
   --quit-vscode        Quit VS Code (only used with --quit-apps)
   --restart-vscode     Re-open VS Code after cleanup
   --include-xcode      Alias: include Xcode cleanup even if excluded
@@ -61,6 +64,15 @@ Examples:
 
   # Big item: Apple Aerials videos are included by default; exclude if you want to keep them
   ./1.clean-user-caches.sh --yes --exclude-wallpaper-aerials
+
+  # Optional: remove local zsh backup folders you created during troubleshooting
+  ./1.clean-user-caches.sh --yes --delete-zsh-backups
+
+  # Skip deleting local zsh backup folders
+  ./1.clean-user-caches.sh --yes --exclude-zsh-backups
+
+  # Skip deleting zsh completion dump caches
+  ./1.clean-user-caches.sh --yes --exclude-zsh-compdump
 EOF
 }
 
@@ -82,6 +94,13 @@ QUIT_VSCODE=0
 QUIT_VSCODE_SET=0
 RESTART_VSCODE=0
 GRACEFUL_QUIT=0
+
+# Default: remove local zsh backup folders too.
+# Still safe-by-default because --dry-run is the default mode.
+DELETE_ZSH_BACKUPS=1
+
+# Default: remove zsh completion dump caches too.
+DELETE_ZSH_COMPDUMP=1
 
 EXCLUDE_VSCODE=0
 EXCLUDE_APPLE_UI=0
@@ -120,6 +139,9 @@ while [[ $# -gt 0 ]]; do
     --exclude-homebrew) EXCLUDE_HOMEBREW=1; shift ;;
     --quit-vscode) QUIT_VSCODE=1; QUIT_VSCODE_SET=1; shift ;;
     --restart-vscode) RESTART_VSCODE=1; shift ;;
+    --delete-zsh-backups) DELETE_ZSH_BACKUPS=1; shift ;;
+    --exclude-zsh-backups) DELETE_ZSH_BACKUPS=0; shift ;;
+    --exclude-zsh-compdump) DELETE_ZSH_COMPDUMP=0; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1"; usage; exit 2 ;;
   esac
@@ -163,6 +185,36 @@ TARGETS=(
   "$HOME/.npm/_npx"  # npx cache
   "$HOME/Library/HTTPStorages"  # URLSession caches (usually safe to delete; will be rebuilt)
 )
+
+# Optional: remove local zsh backup folders created during troubleshooting.
+# This is NOT a macOS cache, so it is opt-in via --delete-zsh-backups.
+if [[ $DELETE_ZSH_BACKUPS -eq 1 ]]; then
+  # 1) Home dir backups: ~/zsh-backup-*
+  # Use nullglob so a missing pattern doesn't become a literal.
+  shopt -s nullglob
+  for d in "$HOME"/zsh-backup-*; do
+    [[ -d "$d" ]] && TARGETS+=("$d")
+  done
+  shopt -u nullglob
+
+  # 2) Repo-local backups: <repo>/MacOs/zsh-backups
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+  if [[ -d "$REPO_ROOT/MacOs/zsh-backups" ]]; then
+    TARGETS+=("$REPO_ROOT/MacOs/zsh-backups")
+  fi
+fi
+
+# Default: clean zsh completion dump caches.
+# Note: zsh may re-generate these on next shell start.
+if [[ $DELETE_ZSH_COMPDUMP -eq 1 ]]; then
+  # Legacy in home dir
+  shopt -s nullglob
+  for f in "$HOME"/.zcompdump*; do
+    [[ -e "$f" ]] && TARGETS+=("$f")
+  done
+  shopt -u nullglob
+fi
 
 if [[ $EXCLUDE_VSCODE -eq 0 ]]; then
   TARGETS+=("$HOME/Library/Application Support/Code/Cache")
@@ -390,8 +442,14 @@ UNKNOWN_COUNT_AFTER=0
 # For specific directories, remove directory contents as well.
 for p in "${EXISTING[@]}"; do
   if [[ -d "$p" ]]; then
-    # Remove contents only
-    find "$p" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+    # For special backup dirs, remove the directory entirely.
+    bname="$(basename "$p")"
+    if [[ "$bname" == zsh-backup-* || "$bname" == zsh-backups ]]; then
+      rm -rf "$p" 2>/dev/null || true
+    else
+      # Remove contents only
+      find "$p" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+    fi
   else
     rm -rf "$p" 2>/dev/null || true
   fi
