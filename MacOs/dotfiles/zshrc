@@ -1,0 +1,172 @@
+# zshrc (tracked in repo)
+# Copy to ~/.zshrc on a new Mac.
+# Note: do not commit secrets (tokens/keys/passwords) into a public repo.
+
+# Minimal ~/.zshrc
+# Interactive shell config (prompt, aliases, plugins). Keep it small & predictable.
+
+# Ensure Homebrew is available even when VS Code launches a non-login shell.
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
+# History
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt SHARE_HISTORY
+
+# Completion
+autoload -Uz compinit
+compinit
+
+# Keep Tab behaving like normal zsh completion (predictable, VS Code friendly).
+bindkey '^I' expand-or-complete
+
+# Autosuggestions
+if [[ -r "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+	source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
+
+# Starship prompt (keep last)
+if command -v starship >/dev/null 2>&1; then
+	eval "$(starship init zsh)"
+fi
+
+# --- nvm (Node Version Manager) ---
+# Lazy-loaded by the per-repo `.env.local` hook below (so startup stays fast).
+export NVM_DIR="$HOME/.nvm"
+# --- end nvm ---
+
+
+# --- conda (fast init, no auto-activate) ---
+conda_base="/opt/homebrew/anaconda3"
+if [ -f "$conda_base/etc/profile.d/conda.sh" ]; then
+  # Fast path: provides `conda` without running the slower `conda shell.zsh hook`.
+  . "$conda_base/etc/profile.d/conda.sh"
+elif [ -x "$conda_base/bin/conda" ]; then
+  # Fallback: at least put conda on PATH.
+  export PATH="$conda_base/bin:$PATH"
+fi
+unset conda_base
+# --- end conda ---
+
+# --- per-repo dev env by .env.local (no direnv) ---
+# Put a `.env.local` file in a repo root to opt into auto-activation.
+# Back-compat: if `.env.local` is absent, we also accept legacy `.dev-env`.
+# Format (multiple lines allowed):
+#   conda-env="Dev20260101"
+#   nvm-env="22.17.1"   # or "default"; omit line => do not load nvm
+autoload -Uz add-zsh-hook
+
+__find_dev_env_file() {
+	local d="$PWD"
+	while [[ "$d" != "/" ]]; do
+		if [[ -f "$d/.env.local" ]]; then
+			echo "$d/.env.local"
+			return 0
+		fi
+		if [[ -f "$d/.dev-env" ]]; then
+			echo "$d/.dev-env"
+			return 0
+		fi
+		d="${d:h}"
+	done
+	return 1
+}
+
+__devenv_get() {
+	local file="$1" key="$2"
+	# Extract first non-empty, non-comment value for key=...; supports optional quotes.
+	sed -nE "s/^[[:space:]]*${key}[[:space:]]*=[[:space:]]*\"?([^\"#]+)\"?[[:space:]]*(#.*)?$/\1/p" "$file" |
+		grep -vE '^[[:space:]]*$' |
+		head -n 1 |
+		xargs 2>/dev/null
+}
+
+__auto_nvm_load() {
+	# Load nvm only when needed.
+	if command -v nvm >/dev/null 2>&1; then
+		return 0
+	fi
+
+	# Ensure NVM_DIR is set.
+	: "${NVM_DIR:=$HOME/.nvm}"
+	export NVM_DIR
+
+	if [[ -s "/opt/homebrew/opt/nvm/nvm.sh" ]]; then
+		. "/opt/homebrew/opt/nvm/nvm.sh"
+		[[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ]] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+		return 0
+	fi
+	return 1
+}
+
+__auto_dev_apply() {
+	local dev_file conda_target nvm_target
+	dev_file="$(__find_dev_env_file)" || dev_file=""
+
+	conda_target=""
+	nvm_target=""
+	if [[ -n "$dev_file" ]]; then
+		conda_target="$(__devenv_get "$dev_file" "conda-env")"
+		nvm_target="$(__devenv_get "$dev_file" "nvm-env")"
+	fi
+
+	# --- conda (only if conda-env is declared) ---
+	if command -v conda >/dev/null 2>&1; then
+		if [[ -n "$conda_target" ]]; then
+			if [[ "${CONDA_DEFAULT_ENV:-}" != "$conda_target" ]]; then
+				conda activate "$conda_target" >/dev/null 2>&1 || true
+				export __AUTO_CONDA_OWNED=1
+			fi
+		else
+			if [[ "${__AUTO_CONDA_OWNED:-0}" == "1" && -n "${CONDA_DEFAULT_ENV:-}" ]]; then
+				conda deactivate >/dev/null 2>&1 || true
+				unset __AUTO_CONDA_OWNED
+			fi
+		fi
+	fi
+
+	# --- nvm (only if nvm-env is declared) ---
+	if [[ -n "$nvm_target" ]]; then
+		if __auto_nvm_load; then
+			export DEVENV_NVM_ENABLED=1
+			if [[ "${__AUTO_NVM_OWNED:-0}" != "1" ]]; then
+				export __AUTO_NVM_OLD_PATH="$PATH"
+				export __AUTO_NVM_OWNED=1
+			fi
+
+			if [[ "$nvm_target" == "default" ]]; then
+				nvm use --silent default >/dev/null 2>&1 || true
+			else
+				nvm use --silent "$nvm_target" >/dev/null 2>&1 || true
+			fi
+			hash -r 2>/dev/null || true
+		fi
+	else
+		unset DEVENV_NVM_ENABLED
+		# Restore PATH only if this hook loaded/changed it.
+		if [[ "${__AUTO_NVM_OWNED:-0}" == "1" ]]; then
+			if [[ -n "${__AUTO_NVM_OLD_PATH:-}" ]]; then
+				export PATH="$__AUTO_NVM_OLD_PATH"
+			fi
+			unset __AUTO_NVM_OLD_PATH __AUTO_NVM_OWNED
+			unset NVM_BIN NVM_INC
+			hash -r 2>/dev/null || true
+		fi
+	fi
+}
+
+add-zsh-hook chpwd __auto_dev_apply
+__auto_dev_apply
+# --- end per-repo dev env ---
+
+# --- conda default dev env (DISABLED) ---
+# IMPORTANT: Do NOT auto-activate a fixed env here.
+# --- end conda default dev env ---
+
+# Syntax highlighting (must be last)
+if [[ -r "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+	source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi

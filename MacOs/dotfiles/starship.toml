@@ -1,0 +1,55 @@
+# starship.toml (tracked in repo)
+# Copy to ~/.config/starship.toml on a new Mac.
+# Note: do not commit secrets (tokens/keys/passwords) into a public repo.
+
+format = "$directory$git_branch$git_status${custom.devenv_conda_active}${custom.devenv_conda_inactive} | ${custom.devenv_nvm_active}${custom.devenv_nvm_inactive}$time$line_break$character"
+
+[directory]
+# 去掉默认尾部空格，避免双空格
+format = "[$path]($style)"
+
+[git_branch]
+symbol = "⎇"
+format = " $symbol [$branch]($style)"
+
+[git_status]
+# 自己带一个前导空格，并用括号让它更“紧凑好看”
+format = " [$all_status$ahead_behind]($style)"
+conflicted = "x"
+ahead = "^${count}"
+behind = "v${count}"
+diverged = "^${ahead_count}v${behind_count}"
+untracked = "?"
+stashed = "S"
+modified = "!"
+staged = "+"
+renamed = "r"
+deleted = "d"
+
+[custom.devenv_conda_active]
+command = "echo \"Conda=$CONDA_DEFAULT_ENV\""
+when = "[ -n \"$CONDA_DEFAULT_ENV\" ]"
+format = " via [$output]($style)"
+
+[custom.devenv_conda_inactive]
+command = "echo 'Non-Conda'"
+when = "[ -z \"$CONDA_DEFAULT_ENV\" ]"
+style = "fg:#fdb9b9"
+format = " via [$output]($style)"
+
+[custom.devenv_nvm_active]
+command = "echo \"Nvm=$(node -v | sed 's/^v//')\""
+when = "[ \"${DEVENV_NVM_ENABLED:-0}\" = \"1\" ]"
+format = "[$output]($style)"
+
+[custom.devenv_nvm_inactive]
+command = "echo 'Non-Nvm'"
+when = "[ \"${DEVENV_NVM_ENABLED:-0}\" != \"1\" ]"
+style = "fg:#fdb9b9"
+format = "[$output]($style)"
+
+[time]
+# 让 @ 由 time 模块自己提供，保证间距一致
+disabled = false
+time_format = "%T"
+format = " @ [$time]($style)"

@@ -31,7 +31,7 @@ cd LearnScripts
 4. 一键安装 Brewfile（用途：把工具安装齐）：
 
 ```bash
-brew bundle --file Brewfile
+brew bundle --file MacOs/Brewfile
 ```
 
 5. 启用 nvm / conda（用途：让它们在 zsh 里可用）：
@@ -79,17 +79,17 @@ which brew
 
 ```bash
 cd /path/to/LearnScripts
-brew bundle dump --file Brewfile --force
+brew bundle dump --file MacOs/Brewfile --force
 ```
 
-说明：我现在把 `Brewfile` 放在本仓库根目录（`LearnScripts/Brewfile`），新 Mac clone 仓库后可直接 `brew bundle`。
+说明：我现在把 `Brewfile` 放在 `LearnScripts/MacOs/Brewfile`，新 Mac clone 仓库后可直接 `brew bundle`。
 
 ### 3) 新机器：导入 Brewfile
 
 用途：按 Brewfile 一键安装：
 
 ```bash
-brew bundle --file Brewfile
+brew bundle --file MacOs/Brewfile
 ```
 
 备注：App Store 的应用不在 Brewfile 里。
@@ -113,51 +113,161 @@ brew bundle --file Brewfile
 - 插件/工具：
   - zsh-autosuggestions（历史建议）
   - zsh-syntax-highlighting（语法高亮）
-  - fzf（模糊搜索 / 补全增强）
-  - zoxide（更聪明的 cd）
 
 相关文件：
 
 - `~/.zprofile`：PATH（Homebrew、个人 bin、dotnet tools）
-- `~/.zshrc`：compinit、fzf 集成、zoxide、autosuggestions、syntax highlighting、Starship init
+- `~/.zshrc`：compinit、autosuggestions、syntax highlighting、Starship init
 
 安装（用途：安装你当前方案里的 prompt/插件/增强工具）：
 
 ```bash
-brew install starship zsh-autosuggestions zsh-syntax-highlighting fzf zoxide
-```
-
-可选：安装 fzf 的 shell 集成（用途：补全/快捷键更完整）：
-
-```bash
-$(brew --prefix)/opt/fzf/install --all
+brew install starship zsh-autosuggestions zsh-syntax-highlighting
 ```
 
 最小 `~/.zshrc` 片段（用途：把上述工具接到 zsh 里；按需合并到你现有配置）：
 
 ```bash
-# fzf
-[ -f "$(brew --prefix)/opt/fzf/shell/completion.zsh" ] && source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
-[ -f "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh" ] && source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
-
-# zoxide
-eval "$(zoxide init zsh)"
+# 性能提示：避免在每次启动时多次运行 `brew --prefix`（会产生额外进程开销）
+HOMEBREW_PREFIX="$(brew --prefix)"
 
 # zsh plugins
-source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # prompt
 eval "$(starship init zsh)"
+
+unset HOMEBREW_PREFIX
+```
+
+Starship 配置（用途：我当前的“简洁两行 prompt”；时间戳在上一行，不和输入挤在同一行）：
+
+```bash
+mkdir -p ~/.config
+cat > ~/.config/starship.toml <<'EOF'
+# Minimal Starship overrides (clean + informative).
+# Line 1: repo/branch/status/env @ time
+# Line 2: input cursor only
+
+format = "$directory$git_branch$git_status${custom.devenv_conda_active}${custom.devenv_conda_inactive} | ${custom.devenv_nvm_active}${custom.devenv_nvm_inactive}$time$line_break$character"
+
+[directory]
+# 去掉默认尾部空格，避免出现双空格
+format = "[$path]($style)"
+
+[git_branch]
+# 不依赖 Nerd Font 的分支符号（如果你的字体支持 Nerd Font，也可以改回图标）
+symbol = "⎇"
+format = " $symbol [$branch]($style)"
+
+[git_status]
+# 保留关键信息，但用 ASCII，且用括号更紧凑
+format = " [$all_status$ahead_behind]($style)"
+conflicted = "x"
+ahead = "^${count}"      # ahead N commits（不是 N 个文件）
+behind = "v${count}"
+diverged = "^${ahead_count}v${behind_count}"
+untracked = "?"         # 有未跟踪文件
+modified = "!"          # 有修改未提交
+staged = "+"            # 有 staged
+stashed = "$"
+renamed = "r"
+deleted = "d"
+
+[custom.devenv_conda_active]
+command = "echo \"Conda=$CONDA_DEFAULT_ENV\""
+when = "[ -n \"$CONDA_DEFAULT_ENV\" ]"
+format = " via [$output]($style)"
+
+[custom.devenv_conda_inactive]
+command = "echo 'Non-Conda'"
+when = "[ -z \"$CONDA_DEFAULT_ENV\" ]"
+style = "fg:#fdb9b9"
+format = " via [$output]($style)"
+
+[custom.devenv_nvm_active]
+command = "echo \"Nvm=$(node -v | sed 's/^v//')\""
+when = "[ \"${DEVENV_NVM_ENABLED:-0}\" = \"1\" ]"
+format = "[$output]($style)"
+
+[custom.devenv_nvm_inactive]
+command = "echo 'Non-Nvm'"
+when = "[ \"${DEVENV_NVM_ENABLED:-0}\" != \"1\" ]"
+style = "fg:#fdb9b9"
+format = "[$output]($style)"
+
+[time]
+disabled = false
+time_format = "%T"
+format = " @ [$time]($style)"
+EOF
 ```
 
 VS Code 终端稳定性（避免长命令/大输出导致崩溃）：
 
 - 工作区设置：`.vscode/settings.json`（关闭终端 GPU 加速等）
 
+VS Code 环境继承提示（很关键）：
+
+- VS Code 的集成终端会继承“启动 VS Code 的那个进程”的环境变量。
+  - 如果你在一个已经 `conda activate Dev20260101` 的终端里运行了 `code .`，那么即使别的 repo 没有 `.env.local`（或未声明 `conda-env`），新开的集成终端也可能仍然显示 `via Dev20260101`。
+  - 想彻底避免：先 `conda deactivate` 后再 `code .`，或直接从 Dock/Spotlight 启动 VS Code 再打开 repo。
+
 备份（仅本地，避免误提交）：
 
 - 本仓库下：`MacOs/zsh-backups/`（已加入 `.gitignore`）
+
+一键备份（用途：把当前机器的 `~/.zshrc` 和 Starship 配置落一份到仓库里，方便重装时在本文档里一口气找到）：
+
+```bash
+cd /path/to/LearnScripts
+ts="$(date +%Y%m%d-%H%M%S)"
+mkdir -p MacOs/zsh-backups
+
+cp -f "$HOME/.zshrc" "MacOs/zsh-backups/zshrc.$ts"
+cp -f "$HOME/.zshrc" "MacOs/zsh-backups/zshrc.latest"
+
+if [[ -f "$HOME/.config/starship.toml" ]]; then
+  cp -f "$HOME/.config/starship.toml" "MacOs/zsh-backups/starship.toml.$ts"
+  cp -f "$HOME/.config/starship.toml" "MacOs/zsh-backups/starship.toml.latest"
+else
+  echo "NOTE: missing $HOME/.config/starship.toml (skip)"
+fi
+```
+
+一键恢复（用途：从仓库备份恢复到当前用户目录）：
+
+```bash
+cd /path/to/LearnScripts
+cp -f "MacOs/zsh-backups/zshrc.latest" "$HOME/.zshrc"
+mkdir -p "$HOME/.config"
+
+if [[ -f "MacOs/zsh-backups/starship.toml.latest" ]]; then
+  cp -f "MacOs/zsh-backups/starship.toml.latest" "$HOME/.config/starship.toml"
+fi
+
+source "$HOME/.zshrc"
+```
+
+可同步版本（会上传到 origin，适合新电脑直接复用）：
+
+- 本仓库下：`MacOs/dotfiles/zshrc`
+- 本仓库下：`MacOs/dotfiles/starship.toml`
+
+新电脑一键安装（用途：把仓库里的配置落到你的用户目录）：
+
+```bash
+cd /path/to/LearnScripts
+
+cp -f "MacOs/dotfiles/zshrc" "$HOME/.zshrc"
+mkdir -p "$HOME/.config"
+cp -f "MacOs/dotfiles/starship.toml" "$HOME/.config/starship.toml"
+
+source "$HOME/.zshrc"
+```
+
+提示：如果这个仓库是公开的，提交 `MacOs/dotfiles/*` 前请确认里面没有任何敏感信息（token/密码/私钥等）。
 
 ---
 
@@ -243,6 +353,25 @@ ssh -T git@github.com
 ls -la ~/.oh-my-zsh ~/.p10k.zsh 2>/dev/null
 grep -nE "oh-my-zsh|p10k|powerlevel10k|ZSH_THEME" ~/.zshrc ~/.zprofile ~/.zshenv ~/.zlogin 2>/dev/null
 ```
+
+### 启动变慢怎么查（1–2 秒卡顿）
+
+用途：把“感觉变慢”变成可量化数据，并定位最慢的初始化项。
+
+1. 生成启动报告（写到 `MacOs/zsh-backups/`，不会污染 git）：
+
+```bash
+cd /path/to/LearnScripts
+bash MacOs/profile-zsh-startup.sh
+```
+
+2. 常见根因（按我们本机实测常见排序）：
+
+- `conda activate <env>`：每次开终端自动激活环境通常会带来几百毫秒开销。
+  - 想最快：不要在 `~/.zshrc` 自动 `conda activate`，改用 direnv（做法 C）或手动激活。
+- `conda shell.zsh hook`：相对更慢；建议改为 `source .../conda.sh`（本仓库的 `MacOs/enable-conda.sh` 已更新为快路径）。
+- `nvm`：nvm 自带的 auto/use 逻辑会消耗时间；如果你很少切 Node 版本，可考虑懒加载 nvm 或改用 fnm。
+- `compinit`：首次或缓存失效时更慢；后续一般稳定。
 
 ---
 
@@ -357,11 +486,53 @@ python --version
 conda deactivate
 ```
 
-可选（用途：避免每次打开终端自动进入 base）：
+推荐工作流（用途：只在进入 repo 时激活 conda / 仅在需要时加载 nvm；离开 repo 自动恢复；避免“每次开终端都进 base/某个 env”）：
+
+1. 关闭默认自动进入 base（可选但推荐）：
 
 ```bash
 conda config --set auto_activate_base false
 ```
+
+2. 使用 `.env.local` 声明“这个 repo 需要什么”（用途：让 `~/.zshrc` 的 hook 自动应用）：
+
+在 repo 根目录创建 `.env.local`：
+
+```bash
+cat > .env.local <<'EOF'
+conda-env="Dev20260101"
+nvm-env="22.17.1"   # 或 "default"；不写这一行则不启用 nvm
+EOF
+```
+
+如果一个 repo 没有 `.env.local`：进入时不会自动激活 conda，也不会加载 nvm。
+
+提示：为兼容历史配置，若没有 `.env.local`，也会识别 legacy 的 `.dev-env`（建议逐步迁移）。
+
+性能提示：nvm 是 zsh 启动大头之一；把它改成“按 repo 懒加载”通常能显著降低 `zsh -i` 启动耗时。
+
+可选：做法 A（用途：每次打开终端就默认进入你的开发环境，例如 `Dev20260101`；不依赖 direnv）：
+
+1. 保持不自动进入 base：
+
+```bash
+conda config --set auto_activate_base false
+```
+
+2. 在 `~/.zshrc` 末尾添加（示例）：
+
+```bash
+# --- conda default dev env ---
+if [[ -o interactive ]]; then
+  if [[ -f "/opt/homebrew/anaconda3/etc/profile.d/conda.sh" ]]; then
+    source "/opt/homebrew/anaconda3/etc/profile.d/conda.sh"
+    conda activate Dev20260101 >/dev/null 2>&1 || true
+  fi
+fi
+# --- end conda default dev env ---
+```
+
+切回“按 repo 自动切换”的做法：把上面这段删掉，使用 `.env.local`。
 
 Prompt 可选（用途：不让 conda 单独显示 `(base)` 换行；交给 Starship 在同一行显示环境名）：
 
@@ -377,13 +548,7 @@ cat > ~/.config/starship.toml <<'EOF'
 [conda]
 ignore_base = false
 
-# 右侧时间戳（可选）
-right_format = "$time"
-
-[time]
-disabled = false
-time_format = "%T"
-format = "[$time]($style)"
+# 说明：完整的“我现在终端样式”见上面的 Terminal/Starship 配置。
 EOF
 ```
 

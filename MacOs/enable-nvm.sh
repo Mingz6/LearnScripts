@@ -5,11 +5,11 @@ zshrc="$HOME/.zshrc"
 
 mkdir -p "$HOME/.nvm"
 
-block=$'\n# --- nvm (Node Version Manager) ---\nexport NVM_DIR="$HOME/.nvm"\n[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"\n[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"\n# --- end nvm ---\n'
+block=$'\n# --- nvm (Node Version Manager) ---\n# Keep startup fast: do NOT source nvm.sh here.\n# nvm will be lazy-loaded by the per-repo `.env.local` hook (see ~/.zshrc).\nexport NVM_DIR="$HOME/.nvm"\n# --- end nvm ---\n'
 
 already_configured=0
 if [[ -f "$zshrc" ]]; then
-  if grep -qE '(^|\s)(export\s+)?NVM_DIR=|/opt/homebrew/opt/nvm/nvm\.sh|bash_completion\.d/nvm' "$zshrc"; then
+  if grep -qE '(^|\s)(export\s+)?NVM_DIR=' "$zshrc"; then
     already_configured=1
   fi
 fi
@@ -37,4 +37,4 @@ fi
 
 echo "---"
 # Validate in a fresh login shell so we don't depend on current terminal state.
-zsh -lc 'source ~/.zshrc >/dev/null 2>&1; command -v nvm && nvm --version && nvm ls'
+zsh -lc 'export NVM_DIR="$HOME/.nvm"; if [[ -s /opt/homebrew/opt/nvm/nvm.sh ]]; then source /opt/homebrew/opt/nvm/nvm.sh; command -v nvm && nvm --version && nvm ls; else echo "Missing: /opt/homebrew/opt/nvm/nvm.sh"; fi'
