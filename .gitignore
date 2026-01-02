@@ -1,6 +1,12 @@
-﻿# macOS Desktop Service Store
+﻿# Local terminal backups (may contain secrets)
+MacOs/zsh-backups/
+
+# macOS Desktop Service Store
 .DS_Store
 
 # local development
 node_modules/
 .vscode/
+
+# local files
+*.local
