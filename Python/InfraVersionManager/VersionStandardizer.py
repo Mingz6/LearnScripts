@@ -118,12 +118,12 @@ def process_patterns_from_config(config_file, directory=None, dry_run=False):
         {
             "description": "GitHub Checkout Action",
             "pattern": "actions/checkout@(v\\\\d+(\\\\.\\\\d+)*|main)",
-            "replacement": "actions/checkout@v4.2.2"
+            "replacement": "actions/checkout@v4"
         },
         {
             "description": "Azure Login Action",
             "pattern": "azure/login@(v\\\\d+(\\\\.\\\\d+)*|main)",
-            "replacement": "azure/login@v2.3.0"
+            "replacement": "azure/login@v2"
         }
     ]
 }''')

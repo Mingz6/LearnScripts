@@ -3,12 +3,12 @@
     {
         "description": "Azure Login Action",
         "pattern": "azure/login@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "azure/login@v2.3.0"
+        "replacement": "azure/login@v2"
     },
     {
         "description": "GitHub Checkout Action",
         "pattern": "actions/checkout@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "actions/checkout@v4.2.2"
+        "replacement": "actions/checkout@v4"
     },
     {
         "description": "Azure CLI Action",
@@ -28,52 +28,52 @@
     {
         "description": "Setup Node.js Action",
         "pattern": "actions/setup-node@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "actions/setup-node@v4.4.0"
+        "replacement": "actions/setup-node@v4"
     },
     {
         "description": "Setup .NET Action",
         "pattern": "actions/setup-dotnet@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "actions/setup-dotnet@v4.3.1"
+        "replacement": "actions/setup-dotnet@v4"
     },
     {
         "description": "dorny Paths Filter Action",
         "pattern": "dorny/paths-filter@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "dorny/paths-filter@v3.0.2"
+        "replacement": "dorny/paths-filter@v3"
     },
     {
         "description": "Coverage Report Action",
         "pattern": "irongut/CodeCoverageSummary@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "irongut/CodeCoverageSummary@v1.3.0"
+        "replacement": "irongut/CodeCoverageSummary@v1"
     },
     {
         "description": "marocchino Sticky Pull Request Comment Action",
         "pattern": "marocchino/sticky-pull-request-comment@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "marocchino/sticky-pull-request-comment@v2.9.4"
+        "replacement": "marocchino/sticky-pull-request-comment@v2"
     },
     {
         "description": "Azure Functions Action",
         "pattern": "Azure/functions-action@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "Azure/functions-action@v1.5.3"
+        "replacement": "Azure/functions-action@v1"
     },
     {
         "description": "Azure Bicep Deploy Action",
         "pattern": "Azure/bicep-deploy@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "Azure/bicep-deploy@v2.2.0"
+        "replacement": "Azure/bicep-deploy@v2"
     },
     {
         "description": "codeql-action init Action",
         "pattern": "github/codeql-action/init@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "github/codeql-action/init@v3.29.8"
+        "replacement": "github/codeql-action/init@v4"
     },
     {
         "description": "codeql-action autobuild Action",
         "pattern": "github/codeql-action/autobuild@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "github/codeql-action/autobuild@v3.29.8"
+        "replacement": "github/codeql-action/autobuild@v4"
     },
     {
         "description": "codeql-action analyze Action",
         "pattern": "github/codeql-action/analyze@(v\\d+(\\.\\d+)*|main)",
-        "replacement": "github/codeql-action/analyze@v3.29.8"
+        "replacement": "github/codeql-action/analyze@v4"
     }
     ]
 }
